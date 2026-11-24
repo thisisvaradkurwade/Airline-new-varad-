@@ -14,6 +14,20 @@
         <div class="welcome-orbit orbit-two"></div>
       </section>
 
+      <section class="dashboard-search" aria-label="Quick flight search">
+        <div class="search-intro">
+          <span class="eyebrow">PLAN YOUR NEXT JOURNEY</span>
+          <h2>Where would you like to go?</h2>
+          <p>Search the available SkyWings schedules and continue to seat selection.</p>
+        </div>
+        <form class="dashboard-search-form" @submit.prevent="searchFlights">
+          <label>From<input v-model.trim="searchFrom" placeholder="City or airport code" /></label>
+          <label>To<input v-model.trim="searchTo" placeholder="Destination" /></label>
+          <label>Cabin<select v-model="searchClass"><option>Economy</option><option>Business</option><option>First Class</option></select></label>
+          <button type="submit">Search flights <span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+
       <section class="stats-grid" aria-label="Booking summary">
         <article class="stat-card">
           <div class="stat-top"><span class="stat-icon blue">▤</span><span class="stat-caption">ALL TIME</span></div>
@@ -35,6 +49,19 @@
           <strong>{{ cancelledBookingsCount }}</strong>
           <span class="stat-label">Cancelled bookings</span>
         </article>
+      </section>
+
+      <section class="spend-overview" aria-label="Travel spend and cabin breakdown">
+        <div class="spend-total">
+          <span class="eyebrow">BOOKING VALUE</span>
+          <strong>{{ formatFare(totalCharges) }}</strong>
+          <small>Total value of the bookings currently listed</small>
+        </div>
+        <div class="class-breakdown">
+          <div><span class="class-dot economy-dot"></span><span>Economy</span><strong>{{ classCount('Economy') }}</strong></div>
+          <div><span class="class-dot business-dot"></span><span>Business</span><strong>{{ classCount('Business') }}</strong></div>
+          <div><span class="class-dot first-dot"></span><span>First Class</span><strong>{{ classCount('First Class') }}</strong></div>
+        </div>
       </section>
 
       <section class="section-heading">
@@ -63,6 +90,16 @@
         <router-link to="/profile" class="quick-card">
           <span class="quick-icon amber">◎</span>
           <span class="quick-text"><strong>My profile</strong><small>Update your personal details</small></span>
+          <span class="quick-arrow">↗</span>
+        </router-link>
+        <router-link to="/project-dashboard" class="quick-card">
+          <span class="quick-icon blue">◈</span>
+          <span class="quick-text"><strong>Airport & aircraft lab</strong><small>Explore 2D / 3D graphics and system modules</small></span>
+          <span class="quick-arrow">↗</span>
+        </router-link>
+        <router-link to="/flights" class="quick-card">
+          <span class="quick-icon green">▦</span>
+          <span class="quick-text"><strong>Seat matrix</strong><small>Choose a flight to inspect its cabin layout</small></span>
           <span class="quick-arrow">↗</span>
         </router-link>
       </section>
@@ -123,7 +160,7 @@
 
       <footer class="dashboard-footnote">
         <span class="footnote-dot"></span>
-        Reservation records are loaded from the SkyWings booking service.
+        Booking totals reflect the reservation records returned by the current project API. Verify inventory and persistence before treating demo data as live airline operations.
       </footer>
     </div>
   </div>
@@ -139,10 +176,17 @@ const bookingStore = useBookingStore();
 
 const loading = ref(true);
 const loadError = ref('');
+const searchFrom = ref('');
+const searchTo = ref('');
+const searchClass = ref('Economy');
 const bookings = computed(() => bookingStore.myBookings || []);
 const firstName = computed(() => (authStore.userName || 'traveller').trim().split(/\s+/)[0]);
 
 const totalBookingsCount = computed(() => bookings.value.length);
+const totalCharges = computed(() => bookings.value.reduce((sum, booking) => {
+  const fare = Number(booking.fare);
+  return sum + (Number.isFinite(fare) ? fare : 0);
+}, 0));
 const activeBookingsCount = computed(() => bookings.value.filter(b => b.booking_status === 'CONFIRMED').length);
 const cancelledBookingsCount = computed(() => bookings.value.filter(b => b.booking_status === 'CANCELLED').length);
 const boardedBookingsCount = computed(() => bookings.value.filter(b =>
@@ -154,6 +198,19 @@ const recentBookings = computed(() => [...bookings.value]
   .slice(0, 5));
 
 onMounted(loadBookings);
+
+function searchFlights() {
+  const query = { travelClass: searchClass.value };
+  if (searchFrom.value) query.from = searchFrom.value;
+  if (searchTo.value) query.to = searchTo.value;
+  window.location.hash = '/flights?' + new URLSearchParams(query).toString();
+}
+
+function classCount(name) {
+  return bookings.value.filter(booking =>
+    String(booking.travel_class || '').toLowerCase() === name.toLowerCase()
+  ).length;
+}
 
 async function loadBookings() {
   loading.value = true;
@@ -223,6 +280,23 @@ function statusClass(status) {
 .welcome-orbit { position: absolute; z-index: -1; border: 1px solid #ffffff18; border-radius: 50%; }
 .orbit-one { width: 340px; height: 340px; right: 10%; top: -180px; }
 .orbit-two { width: 470px; height: 470px; right: -3%; top: -230px; }
+.dashboard-search { display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.7fr); gap: 26px; align-items: center; padding: 25px 28px; margin-bottom: 22px; background: #fff; border: 1px solid #e7edf3; border-radius: 17px; box-shadow: 0 4px 18px #102c460c; }
+.search-intro h2 { margin: 0; color: #102b46; font-size: 1.25rem; letter-spacing: -.03em; }
+.search-intro p { margin: 6px 0 0; color: #7a8998; font-size: .78rem; }
+.dashboard-search-form { display: grid; grid-template-columns: 1fr 1fr .8fr auto; align-items: end; gap: 10px; }
+.dashboard-search-form label { display: flex; flex-direction: column; gap: 6px; color: #617487; font-size: .7rem; font-weight: 800; }
+.dashboard-search-form input, .dashboard-search-form select { min-width: 0; width: 100%; height: 42px; padding: 0 11px; border: 1px solid #dce5ec; border-radius: 9px; background: #fbfdff; color: #17344f; font: inherit; font-size: .78rem; outline: none; }
+.dashboard-search-form input:focus, .dashboard-search-form select:focus { border-color: #3283b4; box-shadow: 0 0 0 3px #3283b41c; }
+.dashboard-search-form button { height: 42px; padding: 0 15px; border: 0; border-radius: 9px; background: #1766a0; color: #fff; font: inherit; font-size: .78rem; font-weight: 800; cursor: pointer; white-space: nowrap; }
+.dashboard-search-form button:hover { background: #0f4f80; }
+.spend-overview { display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.7fr); gap: 22px; align-items: center; padding: 20px 25px; margin: 0 0 36px; background: #f1f7fb; border: 1px solid #dceaf3; border-radius: 15px; }
+.spend-total strong { display: block; color: #102b46; font-size: 1.8rem; letter-spacing: -.04em; }
+.spend-total small { color: #7a8998; font-size: .72rem; }
+.class-breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.class-breakdown > div { display: flex; align-items: center; gap: 7px; padding: 11px; background: #fff; border: 1px solid #e2ebf2; border-radius: 10px; color: #65788a; font-size: .73rem; }
+.class-breakdown strong { margin-left: auto; color: #17344f; font-size: 1rem; }
+.class-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; }
+.economy-dot { background: #16805e; } .business-dot { background: #3977c7; } .first-dot { background: #c18a25; }
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 38px; }
 .stat-card { padding: 20px 22px; background: #fff; border: 1px solid #e7edf3; border-radius: 15px; box-shadow: 0 4px 16px #102c4610; }
 .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
@@ -281,10 +355,16 @@ function statusClass(status) {
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 900px) {
   .stats-grid, .quick-grid { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-search, .spend-overview { grid-template-columns: 1fr; }
+  .dashboard-search-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .welcome-panel { padding: 34px; }
 }
 @media (max-width: 620px) {
   .welcome-panel { align-items: flex-start; flex-direction: column; padding: 28px 23px; }
+  .dashboard-search { padding: 20px 16px; }
+  .dashboard-search-form { grid-template-columns: 1fr; }
+  .dashboard-search-form button { width: 100%; }
+  .class-breakdown { grid-template-columns: 1fr; }
   .welcome-panel h1 { font-size: 1.8rem; }
   .stats-grid { gap: 10px; }
   .stat-card { padding: 15px; }
