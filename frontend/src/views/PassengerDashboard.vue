@@ -103,7 +103,7 @@
               </div>
               <div class="booking-meta">
                 <span>{{ booking.flight_number || booking.flight?.flight_number || 'Flight details unavailable' }}</span>
-                <span v-if="booking.booking_date">{{ formatDate(booking.booking_date) }}</span>
+                <span v-if="booking.booking_date">Booked {{ formatDate(booking.booking_date) }}</span>
                 <span v-if="booking.seat_number">Seat {{ booking.seat_number }}</span>
                 <span v-if="booking.travel_class">{{ booking.travel_class }}</span>
               </div>
@@ -123,7 +123,7 @@
 
       <footer class="dashboard-footnote">
         <span class="footnote-dot"></span>
-        Your booking information is retrieved from your SkyWings account.
+        Reservation records are loaded from the SkyWings booking service.
       </footer>
     </div>
   </div>
