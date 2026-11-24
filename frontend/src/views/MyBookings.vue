@@ -117,7 +117,7 @@
         <div class="modal-card">
           <div class="modal-header">
             <h3>Confirm Flight Cancellation</h3>
-            <button @click="showCancelModal = false" class="modal-close">×</button>
+            <button @click="showCancelModal = false" class="modal-close" type="button" aria-label="Close dialog" title="Close dialog">× <span>Close</span></button>
           </div>
 
           <div class="modal-body" v-if="bookingToCancel">
