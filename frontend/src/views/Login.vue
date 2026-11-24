@@ -24,24 +24,25 @@
       </div>
       <div class="auth-side-bottom"><span>SKYWINGS AIRLINES</span><span>TRAVEL BEAUTIFULLY.</span></div>
     </section>
-    <div v-if="loading" class="signin-flight-overlay" aria-live="polite">
+    <div v-if="loading" class="signin-flight-overlay" :class="{ 'is-leaving': leaving }" aria-live="polite">
       <div class="flight-horizon"></div>
-      <div class="flight-runway"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="flight-trail"></div>
       <div class="landing-plane" aria-hidden="true">
-        <svg viewBox="0 0 220 86" role="img" aria-label="SkyWings aircraft landing">
-          <defs><linearGradient id="landing-body" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".7" stop-color="#dcebf5"/><stop offset="1" stop-color="#9bbbd0"/></linearGradient></defs>
-          <path d="M8 42 Q13 35 28 34 L185 34 Q202 35 214 43 Q201 50 185 51 L28 49 Q13 48 8 42Z" fill="url(#landing-body)" stroke="#b5cbd9" stroke-width="1.5"/>
-          <path d="M88 35 L120 5 Q126 2 132 6 L119 36 L141 50 L119 49 L88 35Z" fill="#9ebed2" stroke="#d9eaf4"/>
-          <path d="M40 35 L55 17 Q60 14 65 17 L59 36 L67 49 L57 49 L40 47Z" fill="#c4d9e7"/>
-          <path d="M19 43 L187 43" stroke="#1479ad" stroke-width="3.5"/>
-          <path d="M28 39 L177 39" stroke="#e7b66d" stroke-width="1.5"/>
-          <g fill="#31536c"><rect x="82" y="39" width="5" height="2" rx="1"/><rect x="92" y="39" width="5" height="2" rx="1"/><rect x="102" y="39" width="5" height="2" rx="1"/><rect x="112" y="39" width="5" height="2" rx="1"/><rect x="122" y="39" width="5" height="2" rx="1"/></g>
-          <path d="M77 51 L73 60 M151 51 L148 59" stroke="#d9e8f1" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="72" cy="62" r="3" fill="#e7b66d"/><circle cx="147" cy="61" r="3" fill="#e7b66d"/>
+        <svg viewBox="0 0 180 72" role="img" aria-label="Airplane in flight">
+          <path d="M10 34 L67 29 L91 7 Q96 3 101 7 L93 30 L142 33 L168 36 L142 40 L93 43 L101 65 Q96 69 91 65 L67 43 L10 39 Q4 37 10 34Z" fill="#f7fbff"/>
+          <path d="M28 35 L143 35" stroke="#1c719c" stroke-width="3" stroke-linecap="round"/>
+          <path d="M67 29 L91 7 Q96 3 101 7 L93 30" fill="#d7e8f2"/>
+          <path d="M67 43 L91 65 Q96 69 101 65 L93 43" fill="#d7e8f2"/>
+          <path d="M18 36 L31 36" stroke="#e6bd84" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="130" cy="36.5" r="1.7" fill="#e6bd84"/>
         </svg>
-        <span class="plane-shadow"></span>
       </div>
-      <div class="signin-flight-copy"><span>SKYWINGS · ARRIVAL</span><strong>Your journey continues.</strong><i></i></div>
+      <div class="signin-flight-copy">
+        <span>SKYWINGS</span>
+        <strong>Preparing your dashboard</strong>
+        <i></i>
+      </div>
+      <div class="flight-progress"><span></span></div>
     </div>
   </main>
 </template>
@@ -111,26 +112,25 @@ async function handleLogin() {
 .auth-security{margin-top:50px;padding-top:18px;border-top:1px solid #e5eaee;color:#8997a3;font-size:10px;text-align:center}.auth-security span{color:#b58b57;margin-right:7px}
 .auth-side-bottom{position:absolute;bottom:24px;left:36px;right:36px;display:flex;justify-content:space-between;color:#a5b1ba;font-size:8px;letter-spacing:.17em;font-weight:800}
 .auth-mobile-brand{display:none}
-.signin-flight-overlay{position:fixed;inset:0;z-index:9999;overflow:hidden;background:radial-gradient(ellipse at 50% 36%,#173e5c 0%,#0a2742 48%,#041426 100%);color:#fff;animation:overlay-in .35s ease both}
-.flight-horizon{position:absolute;left:0;right:0;top:42%;height:1px;background:linear-gradient(90deg,transparent,rgba(181,220,239,.28),transparent);box-shadow:0 0 42px rgba(116,198,231,.2)}
-.flight-runway{position:absolute;left:50%;bottom:-16%;width:min(78vw,850px);height:43%;transform:translateX(-50%) perspective(420px) rotateX(62deg);transform-origin:bottom;background:linear-gradient(180deg,rgba(39,85,113,.42),rgba(2,13,25,.96));border-top:1px solid rgba(194,225,241,.36);box-shadow:0 -15px 70px rgba(91,173,211,.12)}
-.flight-runway:before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:repeating-linear-gradient(180deg,rgba(240,248,252,.7) 0 13px,transparent 13px 30px)}
-.flight-runway span{position:absolute;top:9%;bottom:0;width:2px;background:repeating-linear-gradient(180deg,rgba(225,190,139,.9) 0 3px,transparent 3px 24px);filter:drop-shadow(0 0 5px rgba(225,190,139,.55))}
-.flight-runway span:nth-child(1){left:12%}.flight-runway span:nth-child(2){left:30%}.flight-runway span:nth-child(3){left:70%}.flight-runway span:nth-child(4){left:88%}.flight-runway span:nth-child(5){display:none}
-.landing-plane{position:absolute;z-index:3;width:clamp(145px,19vw,220px);left:-24%;top:27%;animation:plane-landing 1.85s cubic-bezier(.22,.72,.2,1) forwards;filter:drop-shadow(0 12px 18px rgba(0,0,0,.35))}
-.landing-plane svg{display:block;width:100%}
-.plane-shadow{position:absolute;left:20%;right:10%;bottom:7%;height:5px;border-radius:50%;background:rgba(0,0,0,.35);filter:blur(5px);opacity:0;animation:shadow-arrive 1.85s ease-out forwards}
-.signin-flight-copy{position:absolute;z-index:5;left:0;right:0;bottom:12%;display:flex;align-items:center;flex-direction:column;text-align:center;text-shadow:0 2px 18px #061a2c;animation:copy-arrive .7s .55s both}
-.signin-flight-copy>span{color:#e5bd84;font-size:9px;font-weight:800;letter-spacing:.32em}
-.signin-flight-copy>strong{margin-top:12px;font:400 clamp(27px,4.5vw,43px) Georgia,serif;letter-spacing:.01em}
-.signin-flight-copy>i{margin-top:22px;width:150px;height:1px;background:linear-gradient(90deg,transparent,#e5bd84,transparent);animation:runway-glow 1.7s ease-in-out infinite}
-@keyframes plane-landing{0%{left:-25%;top:21%;transform:rotate(7deg) scale(.78);opacity:0}10%{opacity:1}48%{left:37%;top:30%;transform:rotate(1deg) scale(.94)}72%{left:54%;top:35%;transform:rotate(-1deg) scale(.9)}88%{left:61%;top:37%;transform:rotate(0) scale(.84)}100%{left:67%;top:38%;transform:rotate(0) scale(.8);opacity:0}}
-@keyframes shadow-arrive{0%,65%{opacity:0;transform:scale(.35)}100%{opacity:.8;transform:scale(1)}}
-@keyframes copy-arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes runway-glow{0%,100%{opacity:.35;transform:scaleX(.7)}50%{opacity:1;transform:scaleX(1.2)}}
-@keyframes overlay-in{from{opacity:0}to{opacity:1}}
-@media(max-width:600px){.landing-plane{width:170px;top:29%}.flight-runway{width:110vw}.signin-flight-copy{bottom:15%}}
-@media(prefers-reduced-motion:reduce){.landing-plane,.signin-flight-copy,.signin-flight-copy>i{animation:none!important}.landing-plane{left:40%;top:32%;opacity:1}}
+.signin-flight-overlay{position:fixed;inset:0;z-index:9999;overflow:hidden;background:radial-gradient(ellipse at 50% 38%,#153b58 0%,#0a2741 52%,#041426 100%);color:#fff;display:grid;place-items:center;animation:overlay-arrive .28s ease both}
+.signin-flight-overlay.is-leaving{pointer-events:none;animation:overlay-depart .42s cubic-bezier(.65,0,.35,1) forwards}
+.flight-horizon{position:absolute;left:0;right:0;top:49%;height:1px;background:linear-gradient(90deg,transparent,rgba(184,218,237,.28),transparent)}
+.flight-trail{position:absolute;left:0;top:50%;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(117,190,221,.18),transparent);transform:translateY(35px)}
+.landing-plane{position:absolute;z-index:3;width:clamp(120px,15vw,180px);left:-22%;top:calc(50% - 42px);animation:plane-cross 1.55s cubic-bezier(.42,0,.25,1) forwards;filter:drop-shadow(0 8px 18px rgba(0,0,0,.28))}
+.landing-plane svg{display:block;width:100%;height:auto}
+.signin-flight-copy{position:absolute;left:0;right:0;top:64%;display:flex;align-items:center;flex-direction:column;text-align:center;animation:copy-arrive .55s .18s both}
+.signin-flight-copy>span{color:#e5bd84;font-size:9px;font-weight:800;letter-spacing:.34em}
+.signin-flight-copy>strong{margin-top:11px;color:#f4f8fb;font:400 clamp(24px,3.6vw,36px) Georgia,serif;letter-spacing:.005em}
+.signin-flight-copy>i{display:block;margin-top:17px;width:112px;height:1px;background:linear-gradient(90deg,transparent,#e5bd84,transparent);opacity:.8}
+.flight-progress{position:absolute;left:50%;bottom:12%;width:min(210px,48vw);height:2px;overflow:hidden;transform:translateX(-50%);background:rgba(255,255,255,.13)}
+.flight-progress span{display:block;width:100%;height:100%;background:linear-gradient(90deg,#4d9fc5,#e5bd84);transform:scaleX(0);transform-origin:left;animation:progress-run 1.8s ease forwards}
+@keyframes plane-cross{0%{left:-22%;transform:translateY(8px) rotate(-3deg);opacity:0}10%{opacity:1}45%{transform:translateY(-2px) rotate(0)}100%{left:112%;transform:translateY(0) rotate(1deg);opacity:1}}
+@keyframes copy-arrive{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes progress-run{to{transform:scaleX(1)}}
+@keyframes overlay-arrive{from{opacity:0}to{opacity:1}}
+@keyframes overlay-depart{to{opacity:0;transform:translateY(-2.5%);visibility:hidden}}
+@media(max-width:600px){.landing-plane{width:138px;top:calc(49% - 35px)}.signin-flight-copy{top:62%}.flight-progress{bottom:14%}}
+@media(prefers-reduced-motion:reduce){.landing-plane,.signin-flight-copy,.flight-progress span{animation:none!important}.landing-plane{left:42%;top:calc(49% - 35px);opacity:1}}
 @media(max-width:900px){.auth-experience{grid-template-columns:1fr}.auth-visual{display:none}.auth-form-side{min-height:calc(100vh - 72px);padding:55px 25px}.auth-mobile-brand{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:42px;font-size:12px;font-weight:800;letter-spacing:.2em;color:#17334c}.auth-mobile-brand span{width:30px;height:30px;display:grid;place-items:center;border:1px solid #b58b57;border-radius:50%;color:#b58b57;font-size:14px}.back-home{margin-bottom:42px}.auth-side-bottom{bottom:15px}}
 @media(max-width:480px){.auth-form-side{padding:35px 22px 60px}.auth-heading h2{font-size:42px}.auth-security{margin-top:36px}}
 @media(prefers-reduced-motion:reduce){.auth-experience *, .signin-flight-overlay *{animation:none!important;transition:none!important}}
