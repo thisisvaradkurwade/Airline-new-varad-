@@ -54,7 +54,7 @@
       <div class="modal-card">
         <div class="modal-header">
           <h3>Add Airport Hub</h3>
-          <button @click="showAddModal = false" class="modal-close">×</button>
+          <button @click="showAddModal = false" class="modal-close" type="button" aria-label="Close dialog" title="Close dialog">× <span>Close</span></button>
         </div>
 
         <form @submit.prevent="saveAirport">
