@@ -57,21 +57,27 @@ const route = useRoute();
 const authStore = useAuthStore();
 const form = ref({ email: '', password: '' });
 const loading = ref(false);
+const leaving = ref(false);
 const errorMessage = ref('');
 
 async function handleLogin() {
   errorMessage.value = '';
+  leaving.value = false;
   loading.value = true;
   try {
     const res = await authStore.login({ email: form.value.email, password: form.value.password });
-    // Keep the landing sequence on screen long enough to complete smoothly.
-    await new Promise(resolve => window.setTimeout(resolve, 1850));
+    // Complete the aircraft pass, then slide the transition away before changing screens.
+    await new Promise(resolve => window.setTimeout(resolve, 1550));
+    leaving.value = true;
+    await new Promise(resolve => window.setTimeout(resolve, 420));
     const redirectPath = route.query.redirect || (res.user.role === 'admin' ? '/admin/dashboard' : '/dashboard');
     await router.push(redirectPath);
   } catch (err) {
+    leaving.value = false;
     errorMessage.value = err.message || 'Unable to sign in. Please check your details and try again.';
   } finally {
     loading.value = false;
+    leaving.value = false;
   }
 }
 </script>
