@@ -82,21 +82,21 @@ export const useBookingStore = defineStore('booking', {
         const seat = this.draft.seats[0] || {};
         const passenger = this.draft.passengers[0] || {};
 
-        let profileId = 1;
-        try {
-          const profileRes = await passengerApi.getMine();
-          if (profileRes?.passenger?.id) {
-            profileId = profileRes.passenger.id;
-          }
-       } catch {
-  // Fall back gracefully
-}
+        if (!seat.id || !seat.seat_number) {
+          throw new Error('Please select an available seat before confirming your booking.');
+        }
+
+        const profileRes = await passengerApi.getMine();
+        const profileId = profileRes?.passenger?.id;
+        if (!profileId) {
+          throw new Error('Passenger profile not found. Please sign out and sign in again.');
+        }
 
         const payload = {
           flightId: this.draft.flight.id,
           passengerId: profileId,
           seatId: seat.id,
-          seatNumber: seat.seat_number || '12A',
+          seatNumber: seat.seat_number,
           travelClass: this.draft.travelClass,
           fare: this.draft.fare.totalFare,
           passenger: {
@@ -109,7 +109,7 @@ export const useBookingStore = defineStore('booking', {
               fullName: passenger.fullName,
               email: passenger.email,
               phone: passenger.phone || '',
-              seatNumber: seat.seat_number || '12A'
+              seatNumber: seat.seat_number
             }
           ]
         };
