@@ -75,6 +75,22 @@
 
         <p v-if="flightApiError" class="form-feedback error" role="alert">{{ flightApiError }}</p>
 
+        <div class="content-panel status-visual-panel">
+          <div class="panel-header"><div><h3>Booking Status Overview</h3><p class="panel-hint">Academic booking lifecycle demonstration using the existing Java booking sample records.</p></div><span class="badge-source">LOCAL DEMO DATA</span></div>
+          <div class="booking-status-grid">
+            <div v-for="item in bookingStatusSummary" :key="item.status" class="booking-status-card" :class="item.tone">
+              <span class="status-count">{{ item.count }}</span><strong>{{ item.label }}</strong><small>{{ item.description }}</small>
+            </div>
+          </div>
+          <div class="booking-lifecycle">
+            <div v-for="(stage, index) in bookingLifecycle" :key="stage" class="lifecycle-stage" :class="{ reached: lifecycleStageIndex >= index }">
+              <span>{{ index + 1 }}</span><strong>{{ stage }}</strong>
+              <i v-if="index < bookingLifecycle.length - 1" class="lifecycle-connector"></i>
+            </div>
+          </div>
+          <p class="panel-hint">The sample records are not passenger account bookings. Use My Bookings for your own API-backed reservations.</p>
+        </div>
+
         <!-- Live API Metric Cards -->
         <div class="metrics-grid">
           <div class="metric-card">
@@ -1179,6 +1195,32 @@
             </div>
           </div>
 
+          <div class="content-panel coa-calculator-panel">
+            <div class="panel-header"><div><h3>Fare &amp; Fuel Computation Workbench</h3><p class="panel-hint">Editable academic calculations with visible formulas. Values here do not alter a real booking or aircraft dispatch plan.</p></div><span class="badge-source">COA CALCULATION DEMO</span></div>
+            <div class="two-col-layout">
+              <div class="coa-card">
+                <h4>Fare calculator</h4>
+                <div class="form-row"><div class="form-group"><label>Base fare (₹)</label><input v-model.number="coaFare.base" type="number" min="0" class="form-input"/></div><div class="form-group"><label>Passengers</label><input v-model.number="coaFare.passengers" type="number" min="1" max="9" class="form-input"/></div></div>
+                <div class="form-row"><div class="form-group"><label>Cabin class</label><select v-model="coaFare.cabin" class="form-input"><option value="Economy">Economy</option><option value="Business">Business</option><option value="First Class">First Class</option></select></div><div class="form-group"><label>Tax (%)</label><input v-model.number="coaFare.tax" type="number" min="0" max="100" class="form-input"/></div></div>
+                <div class="calculation-result"><small>ESTIMATED TOTAL</small><strong>₹{{ coaFareTotal.toLocaleString('en-IN') }}</strong><code>{{ coaFare.passengers }} × ₹{{ coaFareUnit.toLocaleString('en-IN') }} + {{ coaFare.tax }}% tax</code></div>
+              </div>
+              <div class="coa-card">
+                <h4>Fuel requirement estimator</h4>
+                <div class="form-row"><div class="form-group"><label>Route distance (km)</label><input v-model.number="fuelModel.distance" type="number" min="0" class="form-input"/></div><div class="form-group"><label>Consumption (L / 100 km)</label><input v-model.number="fuelModel.rate" type="number" min="0" step="0.1" class="form-input"/></div></div>
+                <div class="form-row"><div class="form-group"><label>Reserve allowance (%)</label><input v-model.number="fuelModel.reserve" type="number" min="0" max="100" class="form-input"/></div></div>
+                <div class="calculation-result fuel-result"><small>ESTIMATED FUEL REQUIRED</small><strong>{{ fuelRequired.toLocaleString('en-IN', { maximumFractionDigits: 1 }) }} L</strong><code>({{ fuelModel.distance }} ÷ 100) × {{ fuelModel.rate }} × (1 + {{ fuelModel.reserve }} / 100)</code></div>
+              </div>
+              <div class="bcd-reverse-workbench">
+                <h4>Reverse conversion · BCD to Hexadecimal</h4>
+                <label class="form-label">Packed BCD digits (0–9 only)</label>
+                <input v-model.trim="bcdInput" class="form-input code-font" placeholder="e.g. 0001 0010 0011" @input="convertBcdToHex"/>
+                <div class="bcd-row"><span>Decimal value:</span><strong>{{ bcdToHexResult.decimal }}</strong></div>
+                <div class="bcd-row"><span>Hexadecimal:</span><strong class="text-cyan">{{ bcdToHexResult.hex }}</strong></div>
+                <p v-if="bcdToHexResult.error" class="form-feedback error">{{ bcdToHexResult.error }}</p>
+              </div>
+            </div>
+          </div>
+
           <!-- Micro-Architectural Control Unit -->
           <div class="content-panel">
             <div class="panel-header">
@@ -1212,6 +1254,14 @@
                 <button class="btn btn-outline btn-sm" @click="advanceCuCycle">Step Control Unit Cycle</button>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="content-panel instruction-set-panel">
+          <div class="panel-header"><div><h3>Instruction Set Explorer</h3><p class="panel-hint">Choose an instruction to inspect its opcode, operands, operation and register-level effect.</p></div><span class="badge-source">SIMULATED ISA</span></div>
+          <div class="instruction-browser">
+            <div class="instruction-list"><button v-for="ins in instructionSet" :key="ins.mnemonic" class="instruction-choice" :class="{ active: selectedInstruction.mnemonic === ins.mnemonic }" @click="selectedInstruction = ins"><strong>{{ ins.mnemonic }}</strong><small>{{ ins.category }}</small></button></div>
+            <div class="instruction-detail"><span class="badge-algo">{{ selectedInstruction.category }}</span><h4>{{ selectedInstruction.mnemonic }} <code>{{ selectedInstruction.operands }}</code></h4><p>{{ selectedInstruction.description }}</p><div class="instruction-fields"><div><small>OPCODE</small><strong>{{ selectedInstruction.opcode }}</strong></div><div><small>FLAGS</small><strong>{{ selectedInstruction.flags }}</strong></div><div><small>EXAMPLE</small><strong>{{ selectedInstruction.example }}</strong></div></div><pre>{{ selectedInstruction.execution }}</pre></div>
           </div>
         </div>
 
@@ -1315,6 +1365,16 @@
           <span class="badge-source">Academic demo · C++ CG / CGL</span>
         </div>
 
+        <div class="content-panel rendering-pipeline-panel">
+          <div class="panel-header"><div><h3>Computer Graphics Rendering Pipeline</h3><p class="panel-hint">Select a stage to understand how the aircraft model becomes a 2D screen image.</p></div><span class="badge-source">INTERACTIVE CG CONCEPT</span></div>
+          <div class="render-pipeline-track">
+            <button v-for="(stage, index) in renderingStages" :key="stage.name" class="render-stage" :class="{ active: activeRenderStage === index }" @click="activeRenderStage = index">
+              <span class="render-stage-number">0{{ index + 1 }}</span><strong>{{ stage.name }}</strong><small>{{ stage.short }}</small>
+            </button>
+          </div>
+          <div class="render-stage-detail"><span class="eyebrow-tag">STAGE {{ activeRenderStage + 1 }} / {{ renderingStages.length }}</span><h4>{{ renderingStages[activeRenderStage].name }}</h4><p>{{ renderingStages[activeRenderStage].detail }}</p><code>{{ renderingStages[activeRenderStage].formula }}</code></div>
+        </div>
+
         <!-- 3D Aircraft Model Viewer (Aircraft3D.cpp & AircraftProjectionViewing.cpp) -->
         <div class="content-panel">
           <div class="panel-header">
@@ -1372,6 +1432,39 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="content-panel airport-visual-panel">
+          <div class="panel-header"><div><h3>Airport Layout &amp; Ground Operations</h3><p class="panel-hint">Interactive schematic of a terminal, runway, taxiway, apron, gates and boarding zone. This is an academic layout, not live airport tracking.</p></div><span class="badge-source">2D AIRPORT SCHEMATIC</span></div>
+          <div class="airport-toolbar"><button v-for="layer in airportLayers" :key="layer.id" class="btn btn-xs" :class="activeAirportLayer === layer.id ? 'btn-primary' : 'btn-outline'" @click="activeAirportLayer = layer.id">{{ layer.label }}</button></div>
+          <svg class="airport-map" viewBox="0 0 900 360" role="img" aria-label="Schematic airport map with runway, taxiway, terminal, gates and aircraft">
+            <rect x="18" y="18" width="864" height="324" rx="18" fill="#0a1a2c" stroke="#294866"/>
+            <g v-if="activeAirportLayer === 'ALL' || activeAirportLayer === 'AIRFIELD'">
+              <rect x="50" y="55" width="800" height="72" rx="8" fill="#26394c" stroke="#7891a8"/>
+              <path d="M70 91 H830" stroke="#f8fafc" stroke-width="2" stroke-dasharray="20 14"/>
+              <text x="450" y="82" text-anchor="middle" fill="#e2e8f0" font-size="13">RUNWAY 09 / 27</text>
+              <path d="M90 145 C220 180 300 180 420 145 S650 115 810 145" fill="none" stroke="#fbbf24" stroke-width="10" stroke-dasharray="16 8"/>
+              <text x="450" y="178" text-anchor="middle" fill="#fbbf24" font-size="12">TAXIWAY</text>
+              <rect x="320" y="195" width="310" height="112" rx="12" fill="#173b58" stroke="#38bdf8" stroke-width="2"/>
+              <text x="475" y="225" text-anchor="middle" fill="#e0f2fe" font-size="16" font-weight="700">PASSENGER TERMINAL</text>
+              <text x="475" y="245" text-anchor="middle" fill="#94a3b8" font-size="11">CHECK-IN · SECURITY · DEPARTURES</text>
+              <g v-for="(gate, index) in ['A1','A2','A3','A4']" :key="gate">
+                <rect :x="350 + index * 68" y="264" width="54" height="28" rx="5" fill="#0b2940" stroke="#34d399"/>
+                <text :x="377 + index * 68" y="282" text-anchor="middle" fill="#a7f3d0" font-size="11">GATE {{ gate }}</text>
+              </g>
+            </g>
+            <g v-if="activeAirportLayer === 'ALL' || activeAirportLayer === 'TERMINAL'">
+              <rect x="650" y="205" width="190" height="90" rx="10" fill="#312e55" stroke="#a78bfa"/>
+              <text x="745" y="235" text-anchor="middle" fill="#ddd6fe" font-size="13" font-weight="700">BOARDING ZONE</text>
+              <text x="745" y="256" text-anchor="middle" fill="#c4b5fd" font-size="11">WAITING · GATE ACCESS</text>
+              <path d="M630 250 H650" stroke="#a78bfa" stroke-width="3" stroke-dasharray="5 4"/>
+            </g>
+            <g v-if="activeAirportLayer === 'ALL' || activeAirportLayer === 'AIRFIELD'">
+              <path d="M450 128 L450 195" stroke="#38bdf8" stroke-width="3" stroke-dasharray="5 5"/>
+              <g transform="translate(445 150)"><path d="M0 -18 L5 4 L25 12 L25 17 L5 12 L5 26 L12 30 L12 34 L0 30 L-12 34 L-12 30 L-5 26 L-5 12 L-25 17 L-25 12 L-5 4 Z" fill="#38bdf8"/></g>
+            </g>
+            <text x="48" y="325" fill="#7891a8" font-size="10">SCHEMATIC VIEW · NOT TO SCALE</text>
+          </svg>
         </div>
 
         <!-- 2D Aircraft Glyph & Cabin Matrix Visualizer -->
@@ -2485,6 +2578,65 @@ function stepAluClock() {
   }
 }
 
+const bookingLifecycle = ['Pending', 'Confirmed', 'Checked-in', 'Boarded'];
+const bookingStatusSummary = computed(() => [
+  { status: 'CONFIRMED', label: 'Confirmed', tone: 'green', description: 'Reservation secured' },
+  { status: 'PENDING', label: 'Pending', tone: 'amber', description: 'Awaiting confirmation' },
+  { status: 'CANCELLED', label: 'Cancelled', tone: 'red', description: 'Reservation cancelled' },
+  { status: 'BOARDED', label: 'Boarded', tone: 'blue', description: 'Passenger boarded' }
+].map(item => ({ ...item, count: javaBookings.value.filter(b => b.status === item.status).length })));
+const lifecycleStageIndex = computed(() => {
+  const statuses = javaBookings.value.map(b => b.status);
+  if (statuses.includes('BOARDED')) return 3;
+  if (statuses.includes('CHECKED_IN')) return 2;
+  if (statuses.includes('CONFIRMED')) return 1;
+  return 0;
+});
+
+const renderingStages = [
+  { name: 'Modeling', short: '3D geometry', detail: 'Build the aircraft from vertices, edges and polygon surfaces: fuselage, wings, tail and cabin objects.', formula: 'Model coordinates → object space' },
+  { name: 'Transformation', short: 'Move & rotate', detail: 'Apply model, view and projection transformations to place the aircraft relative to the virtual camera.', formula: 'Pclip = Projection × View × Model × P' },
+  { name: 'Lighting', short: 'Light & material', detail: 'Estimate surface brightness from light direction, surface normals, material color and viewer direction.', formula: 'I = IaKa + IdKd max(0, N·L)' },
+  { name: 'Clipping', short: 'View volume', detail: 'Discard geometry outside the camera viewing volume and clip primitives crossing its boundaries.', formula: 'Clip coordinates ∈ viewing volume' },
+  { name: 'Projection', short: '3D → 2D', detail: 'Convert 3D camera-space coordinates into normalized device coordinates using perspective or orthographic projection.', formula: 'Perspective: x′ = x / z, y′ = y / z' },
+  { name: 'Rasterization', short: 'Pixels', detail: 'Convert projected triangles and lines into fragments/pixels and interpolate depth and attributes.', formula: 'Primitives → fragments → depth test' },
+  { name: 'Display', short: 'Final frame', detail: 'Resolve visible fragments, apply shading and write the final image to the display buffer.', formula: 'Framebuffer → screen' }
+];
+const activeRenderStage = ref(0);
+const airportLayers = [{ id: 'ALL', label: 'All layers' }, { id: 'AIRFIELD', label: 'Runway & taxiway' }, { id: 'TERMINAL', label: 'Terminal & boarding' }];
+const activeAirportLayer = ref('ALL');
+
+const coaFare = ref({ base: 5000, passengers: 1, cabin: 'Economy', tax: 12 });
+const coaFareUnit = computed(() => {
+  const multiplier = coaFare.value.cabin === 'First Class' ? 2.5 : coaFare.value.cabin === 'Business' ? 1.8 : 1;
+  return Math.max(0, Number(coaFare.value.base) || 0) * multiplier;
+});
+const coaFareTotal = computed(() => {
+  const count = Math.max(1, Math.min(9, Number(coaFare.value.passengers) || 1));
+  const tax = Math.max(0, Number(coaFare.value.tax) || 0);
+  return Math.round(coaFareUnit.value * count * (1 + tax / 100));
+});
+const fuelModel = ref({ distance: 1200, rate: 250, reserve: 10 });
+const fuelRequired = computed(() => {
+  const distance = Math.max(0, Number(fuelModel.value.distance) || 0);
+  const rate = Math.max(0, Number(fuelModel.value.rate) || 0);
+  const reserve = Math.max(0, Math.min(100, Number(fuelModel.value.reserve) || 0));
+  return distance / 100 * rate * (1 + reserve / 100);
+});
+
+const instructionSet = [
+  { mnemonic: 'MOV', category: 'Data transfer', opcode: '100010', operands: 'RAX, RBX', flags: 'Unaffected', example: 'MOV RAX, 5000', description: 'Copies source data into the destination register without changing the source.', execution: 'RAX ← 5000\nRBX unchanged\nFlags unchanged' },
+  { mnemonic: 'ADD', category: 'Arithmetic', opcode: '000000', operands: 'RAX, RBX', flags: 'ZF, CF, SF, OF', example: 'ADD RAX, RBX', description: 'Adds the source operand to the destination and stores the result in the destination.', execution: 'TEMP ← RAX + RBX\nRAX ← TEMP\nUpdate arithmetic flags' },
+  { mnemonic: 'SUB', category: 'Arithmetic', opcode: '001010', operands: 'RAX, RBX', flags: 'ZF, CF, SF, OF', example: 'SUB RAX, RBX', description: 'Subtracts the source operand from the destination and stores the result.', execution: 'TEMP ← RAX − RBX\nRAX ← TEMP\nUpdate arithmetic flags' },
+  { mnemonic: 'MUL', category: 'Arithmetic', opcode: '111101', operands: 'RBX', flags: 'CF, OF', example: 'MUL RBX', description: 'Unsigned multiplication using the accumulator; the full product is stored across the accumulator pair.', execution: 'RDX:RAX ← RAX × RBX\nCF / OF indicate high-half result' },
+  { mnemonic: 'CMP', category: 'Comparison', opcode: '001110', operands: 'RAX, RBX', flags: 'ZF, CF, SF, OF', example: 'CMP RAX, RBX', description: 'Performs a subtraction for flag updates but discards the arithmetic result.', execution: 'TEMP ← RAX − RBX\nUpdate flags from TEMP\nRAX remains unchanged' },
+  { mnemonic: 'JMP', category: 'Control flow', opcode: '111010', operands: 'LABEL', flags: 'Unaffected', example: 'JMP NEXT', description: 'Unconditionally changes the instruction pointer to the target label.', execution: 'RIP ← address(NEXT)' },
+  { mnemonic: 'JZ', category: 'Control flow', opcode: '011101', operands: 'LABEL', flags: 'Reads ZF', example: 'JZ FLIGHT_FULL', description: 'Branches to the target when the Zero Flag is set.', execution: 'IF ZF = 1 THEN RIP ← address(LABEL)\nELSE continue sequentially' },
+  { mnemonic: 'AND', category: 'Logical', opcode: '001000', operands: 'RAX, RBX', flags: 'ZF, SF, CF=0, OF=0', example: 'AND RAX, RBX', description: 'Performs a bitwise AND operation between two operands.', execution: 'RAX ← RAX AND RBX\nCF ← 0; OF ← 0' },
+  { mnemonic: 'RET', category: 'Control flow', opcode: '110000', operands: '', flags: 'Unaffected', example: 'RET', description: 'Returns from a procedure by restoring the return address from the stack.', execution: 'RIP ← [RSP]\nRSP ← RSP + operand-size' }
+];
+const selectedInstruction = ref(instructionSet[0]);
+
 // HexToBCD Converter
 const hexInput = ref('0x1A2B');
 const bcdConversion = ref({
@@ -2503,6 +2655,27 @@ function convertHexToBcd() {
     .split('')
     .map(digit => parseInt(digit).toString(2).padStart(4, '0'))
     .join(' ');
+}
+
+const bcdInput = ref('0001 0010 0011');
+const bcdToHexResult = ref({ decimal: '123', hex: '0x7B', error: '' });
+function convertBcdToHex() {
+  const bits = bcdInput.value.replace(/\s+/g, '');
+  if (!bits || !/^[01]+$/.test(bits) || bits.length % 4 !== 0) {
+    bcdToHexResult.value = { decimal: '—', hex: '—', error: 'Enter complete 4-bit BCD nibbles.' };
+    return;
+  }
+  let digits = '';
+  for (let i = 0; i < bits.length; i += 4) {
+    const digit = parseInt(bits.slice(i, i + 4), 2);
+    if (digit > 9) {
+      bcdToHexResult.value = { decimal: '—', hex: '—', error: 'Invalid BCD nibble: each group must represent 0–9.' };
+      return;
+    }
+    digits += String(digit);
+  }
+  const decimalValue = Number(digits);
+  bcdToHexResult.value = { decimal: digits, hex: '0x' + decimalValue.toString(16).toUpperCase(), error: '' };
 }
 
 // Control Unit Simulator
@@ -5126,4 +5299,53 @@ onUnmounted(() => {
     justify-content: space-between;
   }
 }
+
+/* Enhanced interactive academic visualizations */
+.booking-status-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.booking-status-card { padding:16px; border:1px solid #29415c; border-radius:12px; background:#091827; display:flex; flex-direction:column; gap:5px; }
+.booking-status-card .status-count { font-size:28px; font-weight:900; color:#fff; }
+.booking-status-card strong { color:#e2e8f0; font-size:13px; }
+.booking-status-card small { color:#8da4be; font-size:11px; }
+.booking-status-card.green { border-color:#16634e; } .booking-status-card.green .status-count { color:#34d399; }
+.booking-status-card.amber { border-color:#76551b; } .booking-status-card.amber .status-count { color:#fbbf24; }
+.booking-status-card.red { border-color:#71333a; } .booking-status-card.red .status-count { color:#fb7185; }
+.booking-status-card.blue { border-color:#245b82; } .booking-status-card.blue .status-count { color:#38bdf8; }
+.booking-lifecycle { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:18px 0 12px; }
+.lifecycle-stage { position:relative; display:flex; align-items:center; gap:8px; color:#64748b; font-size:12px; }
+.lifecycle-stage > span { display:grid; place-items:center; width:26px; height:26px; border:1px solid #334155; border-radius:50%; font-weight:800; }
+.lifecycle-stage.reached { color:#dbeafe; } .lifecycle-stage.reached > span { background:#075985; border-color:#38bdf8; color:white; }
+.lifecycle-connector { height:2px; flex:1; background:#29415c; }
+.render-pipeline-track { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; }
+.render-stage { min-height:88px; padding:10px; border:1px solid #29415c; border-radius:10px; background:#091827; color:#9fb2c6; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:5px; }
+.render-stage.active { border-color:#38bdf8; background:#10324b; box-shadow:0 0 0 1px #38bdf844; color:#fff; }
+.render-stage-number { color:#38bdf8; font:700 10px monospace; } .render-stage strong { font-size:12px; } .render-stage small { font-size:10px; color:#8da4be; }
+.render-stage-detail { margin-top:12px; padding:16px; border-radius:10px; background:#081422; border:1px solid #1a334f; }
+.render-stage-detail h4 { margin:8px 0 5px; color:#fff; } .render-stage-detail p { color:#9fb2c6; font-size:12px; } .render-stage-detail code { color:#67e8f9; white-space:normal; }
+.airport-toolbar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+.airport-map { display:block; width:100%; height:auto; border:1px solid #294866; border-radius:14px; background:#081321; }
+.coa-calculator-panel .coa-card { height:100%; }
+.coa-card h4 { margin:0 0 14px; color:#e2e8f0; }
+.calculation-result { display:flex; flex-direction:column; gap:6px; margin-top:12px; padding:16px; border:1px solid #1d5a70; border-radius:10px; background:linear-gradient(120deg,#08283b,#0b1c30); }
+.calculation-result small { color:#7dd3fc; font-size:10px; font-weight:800; letter-spacing:.12em; }
+.calculation-result strong { color:#fff; font-size:28px; } .calculation-result code { color:#9fb2c6; white-space:normal; font-size:11px; }
+.fuel-result { border-color:#17634f; } .fuel-result small { color:#6ee7b7; }
+.bcd-reverse-workbench { margin-top:16px; padding-top:14px; border-top:1px solid #1e3a5f; }
+.bcd-reverse-workbench h4 { color:#e2e8f0; margin:0 0 10px; }
+.bcd-reverse-workbench .form-input { width:100%; margin:6px 0 10px; }
+.instruction-browser { display:grid; grid-template-columns:220px minmax(0,1fr); gap:14px; }
+.instruction-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; align-content:start; }
+.instruction-choice { display:flex; flex-direction:column; gap:3px; text-align:left; padding:9px; border:1px solid #29415c; border-radius:8px; background:#091827; color:#cbd5e1; cursor:pointer; }
+.instruction-choice.active { border-color:#38bdf8; background:#10324b; color:#fff; }
+.instruction-choice small { color:#8da4be; font-size:9px; }
+.instruction-detail { padding:16px; border:1px solid #29415c; border-radius:10px; background:#091827; }
+.instruction-detail h4 { color:#fff; font-size:19px; margin:10px 0; }
+.instruction-detail h4 code { color:#67e8f9; font-size:13px; }
+.instruction-detail p { color:#9fb2c6; font-size:12px; }
+.instruction-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:12px 0; }
+.instruction-fields > div { padding:9px; background:#0d2034; border-radius:7px; display:flex; flex-direction:column; gap:4px; min-width:0; }
+.instruction-fields small { color:#64748b; font-size:9px; } .instruction-fields strong { color:#7dd3fc; font:12px monospace; overflow-wrap:anywhere; }
+.instruction-detail pre { white-space:pre-wrap; background:#030b14; color:#6ee7b7; padding:12px; border-radius:8px; font-size:11px; }
+@media (max-width:900px) { .booking-status-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .render-pipeline-track { grid-template-columns:repeat(2,minmax(0,1fr)); } .instruction-browser { grid-template-columns:1fr; } }
+@media (max-width:600px) { .booking-lifecycle { grid-template-columns:repeat(2,minmax(0,1fr)); } .instruction-fields { grid-template-columns:1fr; } .booking-status-grid { grid-template-columns:1fr 1fr; } }
+
 </style>
