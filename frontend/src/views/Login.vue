@@ -24,7 +24,7 @@
       </div>
       <div class="auth-side-bottom"><span>SKYWINGS AIRLINES</span><span>TRAVEL BEAUTIFULLY.</span></div>
     </section>
-    <div v-if="loading" class="signin-flight-overlay" aria-live="polite"><div class="signin-loader"></div><span>PREPARING FOR TAKEOFF</span><strong>Welcome aboard.</strong><i></i></div>
+    <div v-if="loading" class="signin-flight-overlay" aria-live="polite"><AirportAnimation /><div class="signin-flight-copy"><span>PREPARING FOR TAKEOFF</span><strong>Welcome aboard.</strong><i></i></div></div>
   </main>
 </template>
 
@@ -32,6 +32,7 @@
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/authStore';
+import AirportAnimation from '../components/AirportAnimation.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -91,12 +92,11 @@ async function handleLogin() {
 .auth-security{margin-top:50px;padding-top:18px;border-top:1px solid #e5eaee;color:#8997a3;font-size:10px;text-align:center}.auth-security span{color:#b58b57;margin-right:7px}
 .auth-side-bottom{position:absolute;bottom:24px;left:36px;right:36px;display:flex;justify-content:space-between;color:#a5b1ba;font-size:8px;letter-spacing:.17em;font-weight:800}
 .auth-mobile-brand{display:none}
-.signin-flight-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(ellipse at 50% 42%,#174d70,#08233e 58%,#03101f);color:#fff;animation:overlay-in .25s ease both}
-.signin-loader{width:38px;height:38px;border:2px solid rgba(255,255,255,.22);border-top-color:#e5bd84;border-radius:50%;animation:signin-spin .8s linear infinite}
-@keyframes signin-spin{to{transform:rotate(360deg)}}
-.signin-flight-overlay>span{margin-top:28px;color:#d5b17e;font-size:9px;font-weight:800;letter-spacing:.32em}
-.signin-flight-overlay>strong{margin-top:10px;font:400 clamp(30px,5vw,48px) Georgia,serif}
-.signin-flight-overlay>i{position:absolute;bottom:12%;width:160px;height:2px;background:linear-gradient(90deg,transparent,#e5bd84,transparent);animation:runway-glow 1.7s ease-in-out infinite}
+.signin-flight-overlay{position:fixed;inset:0;z-index:9999;overflow:hidden;background:#06182d;color:#fff;animation:overlay-in .25s ease both}
+.signin-flight-copy{position:absolute;z-index:20;left:0;right:0;bottom:13%;display:flex;align-items:center;flex-direction:column;text-align:center;text-shadow:0 2px 18px #06182d}
+.signin-flight-copy>span{color:#e5bd84;font-size:9px;font-weight:800;letter-spacing:.32em}
+.signin-flight-copy>strong{margin-top:10px;font:400 clamp(30px,5vw,48px) Georgia,serif}
+.signin-flight-copy>i{margin-top:22px;width:160px;height:2px;background:linear-gradient(90deg,transparent,#e5bd84,transparent);animation:runway-glow 1.7s ease-in-out infinite}
 @keyframes runway-glow{0%,100%{opacity:.35;transform:scaleX(.7)}50%{opacity:1;transform:scaleX(1.2)}}
 @keyframes overlay-in{from{opacity:0}to{opacity:1}}
 @media(max-width:900px){.auth-experience{grid-template-columns:1fr}.auth-visual{display:none}.auth-form-side{min-height:calc(100vh - 72px);padding:55px 25px}.auth-mobile-brand{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:42px;font-size:12px;font-weight:800;letter-spacing:.2em;color:#17334c}.auth-mobile-brand span{width:30px;height:30px;display:grid;place-items:center;border:1px solid #b58b57;border-radius:50%;color:#b58b57;font-size:14px}.back-home{margin-bottom:42px}.auth-side-bottom{bottom:15px}}
