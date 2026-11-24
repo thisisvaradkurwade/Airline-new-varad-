@@ -1,133 +1,57 @@
 <template>
   <div class="app-layout">
-    <!-- Main Top Navigation -->
     <header class="navbar">
       <div class="container nav-content">
-        <router-link to="/" class="brand-logo">
-          <div class="logo-icon">✈</div>
-          <div class="logo-text">
-            <span class="brand-name">SkyWings</span>
-            <span class="brand-sub">AIRLINES</span>
-          </div>
+        <router-link to="/" class="brand-logo" aria-label="SkyWings home">
+          <span class="logo-icon">✈</span>
+          <span class="logo-text"><strong>SKYWINGS</strong><small>AIRLINES</small></span>
         </router-link>
-
-        <nav class="nav-links">
+        <nav class="nav-links" aria-label="Main navigation">
           <router-link to="/" class="nav-item" exact-active-class="active">Home</router-link>
-          <router-link to="/flights" class="nav-item" active-class="active">Search Flights</router-link>
-          <router-link to="/project-dashboard" class="nav-item" active-class="active">Project Dashboard</router-link>
-          
+          <router-link to="/flights" class="nav-item">Flights</router-link>
           <template v-if="authStore.isAuthenticated">
-            <router-link to="/my-bookings" class="nav-item" active-class="active">My Bookings</router-link>
-            <router-link to="/boarding-pass" class="nav-item" active-class="active">Boarding Pass</router-link>
-            <router-link to="/dashboard" class="nav-item" active-class="active" v-if="!authStore.isAdmin">Dashboard</router-link>
-            <router-link to="/admin/dashboard" class="nav-item admin-badge-link" v-if="authStore.isAdmin">
-              ⚡ Admin Portal
-            </router-link>
+            <router-link to="/my-bookings" class="nav-item">My bookings</router-link>
+            <router-link to="/boarding-pass" class="nav-item">Boarding pass</router-link>
+            <router-link v-if="!authStore.isAdmin" to="/dashboard" class="nav-item">Dashboard</router-link>
+            <router-link v-if="authStore.isAdmin" to="/admin/dashboard" class="nav-item">Admin</router-link>
           </template>
         </nav>
-
         <div class="nav-actions">
           <template v-if="authStore.isAuthenticated">
-            <div class="user-menu">
-              <router-link to="/profile" class="user-pill">
-                <span class="avatar">{{ userInitial }}</span>
-                <span class="user-name">{{ authStore.userName }}</span>
-              </router-link>
-              <button @click="handleLogout" class="btn btn-outline btn-sm" title="Log Out">
-                Logout
-              </button>
-            </div>
+            <router-link to="/profile" class="user-pill"><span class="avatar">{{ userInitial }}</span><span>{{ authStore.userName }}</span></router-link>
+            <button @click="handleLogout" class="nav-logout" type="button">Sign out</button>
           </template>
           <template v-else>
-            <router-link to="/login" class="btn btn-outline btn-sm">Login</router-link>
-            <router-link to="/register" class="btn btn-primary btn-sm">Register</router-link>
+            <router-link to="/login" class="nav-login">Sign in</router-link>
+            <router-link to="/register" class="nav-register">Get started <span>↗</span></router-link>
           </template>
         </div>
       </div>
     </header>
-
-    <!-- Main View Outlet -->
-    <main class="main-content">
-      <router-view />
-    </main>
-
-    <!-- Modern Footer -->
+    <main class="main-content"><router-view /></main>
     <footer class="footer">
-      <div class="container footer-grid">
-        <div class="footer-col">
-          <div class="brand-logo footer-logo">
-            <div class="logo-icon">✈</div>
-            <div class="logo-text">
-              <span class="brand-name">SkyWings Airlines</span>
-              <span class="brand-sub">ENGINEERING ACADEMIC PROJECT</span>
-            </div>
-          </div>
-          <p class="footer-desc">
-            Next-generation full-stack Airline Reservation, Seat Management & Boarding System designed with modular architecture, transactional consistency, and intuitive user experience.
-          </p>
+      <div class="container footer-main">
+        <div class="footer-brand">
+          <router-link to="/" class="brand-logo"><span class="logo-icon">✈</span><span class="logo-text"><strong>SKYWINGS</strong><small>AIRLINES</small></span></router-link>
+          <p>A more thoughtful way to plan, book, and experience every journey. From your first search to your boarding pass, travel beautifully with SkyWings.</p>
         </div>
-
-        <div class="footer-col">
-          <h4>Quick Navigation</h4>
-          <ul>
-            <li><router-link to="/">Home Flight Search</router-link></li>
-            <li><router-link to="/flights">Available Schedules</router-link></li>
-            <li><router-link to="/my-bookings">Manage Bookings</router-link></li>
-            <li><router-link to="/boarding-pass">Web Check-in & Pass</router-link></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>System Modules</h4>
-          <ul>
-            <li><span class="tech-tag">Vue 3 + Vite</span></li>
-            <li><span class="tech-tag">Express.js API</span></li>
-            <li><span class="tech-tag">Supabase PostgreSQL</span></li>
-            <li><span class="tech-tag">Java OOP Model</span></li>
-            <li><span class="tech-tag">Native OpenGL / FreeGLUT Coursework</span></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>Account Access</h4>
-          <p class="demo-info">Sign in with an account registered for this application; demo credentials are not provided.</p>
-          <p class="demo-info"><strong>Admin:</strong> Admin pages require an authenticated account with the admin role.</p>
-          <div class="status-indicator">
-            <span class="dot-online"></span> Admin sign-in required
-          </div>
-        </div>
+        <div class="footer-links"><strong>EXPLORE</strong><router-link to="/">Home</router-link><router-link to="/flights">Find flights</router-link><router-link to="/my-bookings">My bookings</router-link><router-link to="/boarding-pass">Boarding pass</router-link></div>
+        <div class="footer-links"><strong>YOUR ACCOUNT</strong><router-link to="/login">Sign in</router-link><router-link to="/register">Create account</router-link><router-link to="/profile">Passenger profile</router-link></div>
+        <div class="footer-note"><span class="footer-star">✦</span><strong>THE JOURNEY MATTERS.</strong><p>Designed to bring flight reservations, seat selection, check-in, and boarding together in one seamless experience.</p></div>
       </div>
-
-      <div class="footer-bottom">
-        <div class="container bottom-content">
-          <p>© 2026 SkyWings Airlines. Academic Engineering Final Practical Demonstration.</p>
-          <div class="academic-note">Computer Engineering & Information Technology</div>
-        </div>
-      </div>
+      <div class="footer-bottom"><div class="container"><span>© 2026 SkyWings Airlines</span><span>TRAVEL BEAUTIFULLY. ARRIVE INSPIRED.</span></div></div>
     </footer>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/authStore';
 
 const authStore = useAuthStore();
 const router = useRouter();
-const showArrivalIntro = ref(false);
-let introTimer;
-
-const userInitial = computed(() => {
-  return authStore.user?.name ? authStore.user.name.charAt(0).toUpperCase() : 'U';
-});
-
-onMounted(() => {
-  if (router.currentRoute.value.path === '/' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    showArrivalIntro.value = true;
-    introTimer = window.setTimeout(() => { showArrivalIntro.value = false; }, 2300);
-  }
-});
+const userInitial = computed(() => authStore.user?.name?.charAt(0).toUpperCase() || 'U');
 
 function handleLogout() {
   authStore.logout();
@@ -136,279 +60,37 @@ function handleLogout() {
 </script>
 
 <style scoped>
-.app-layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.navbar {
-  background: #ffffff;
-  border-bottom: 1px solid var(--border-color);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: var(--shadow-sm);
-}
-
-.nav-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 72px;
-}
-
-.brand-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-}
-
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--brand-blue) 0%, #0369a1 100%);
-  color: #ffffff;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.brand-name {
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--primary-900);
-}
-
-.brand-sub {
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  color: var(--brand-blue);
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.nav-item {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--primary-700);
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
-  transition: all 0.2s ease;
-}
-
-.nav-item:hover, .nav-item.active {
-  color: var(--brand-blue);
-  background: var(--brand-sky-soft);
-}
-
-.admin-badge-link {
-  background: #fef3c7;
-  color: #92400e !important;
-  font-weight: 700;
-  border: 1px solid #fde68a;
-}
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.user-menu {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.user-pill {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: #f1f5f9;
-  border-radius: 9999px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--primary-900);
-  transition: background 0.2s ease;
-}
-
-.user-pill:hover {
-  background: #e2e8f0;
-}
-
-.avatar {
-  width: 28px;
-  height: 28px;
-  background: var(--brand-blue);
-  color: #ffffff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8125rem;
-  font-weight: 700;
-}
-
-.main-content {
-  flex: 1;
-  position: relative;
-  overflow: clip;
-}
-.arrival-intro{position:fixed;inset:0;z-index:2100;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#164b70 0%,#09243f 48%,#030d1b 100%)}
-.intro-orbit{position:absolute;width:min(70vw,680px);aspect-ratio:1;border:1px solid rgba(154,221,249,.14);border-radius:50%;box-shadow:0 0 70px rgba(50,171,226,.08),inset 0 0 70px rgba(50,171,226,.04)}
-.orbit-a{animation:orbit-breathe 2.4s ease-in-out infinite alternate}.orbit-b{width:min(48vw,460px);animation:orbit-breathe 2.4s .4s ease-in-out infinite alternate}
-.intro-runway{position:absolute;bottom:-18%;left:15%;width:70%;height:56%;transform:perspective(450px) rotateX(62deg);transform-origin:bottom;background:repeating-linear-gradient(90deg,transparent 0 13%,rgba(197,237,255,.1) 13.2% 13.5%,transparent 13.7% 27%),linear-gradient(180deg,rgba(37,107,145,.18),rgba(1,9,20,.85));border-top:2px solid rgba(174,226,249,.28);box-shadow:0 -20px 80px rgba(66,185,238,.12)}
-.intro-plane{position:absolute;width:min(64vw,560px);top:28%;left:-70%;animation:intro-landing 2.1s cubic-bezier(.18,.68,.22,1) forwards;filter:drop-shadow(0 20px 28px rgba(0,0,0,.4))}
-.intro-plane svg{width:100%;display:block}
-.intro-copy{position:absolute;top:64%;display:flex;align-items:center;flex-direction:column;color:#fff;text-align:center;animation:intro-copy-in .8s 1s both}
-.intro-copy span{font-size:10px;letter-spacing:.42em;color:#8fdcff;font-weight:800}
-.intro-copy strong{font-size:clamp(38px,7vw,76px);letter-spacing:.13em;font-weight:800;text-shadow:0 8px 35px rgba(0,0,0,.3)}
-.intro-copy small{font-size:9px;letter-spacing:.35em;color:#b5d8e9}
-.intro-progress{position:absolute;bottom:8%;width:min(220px,45vw);height:2px;background:rgba(255,255,255,.16);overflow:hidden}
-.intro-progress i{display:block;width:100%;height:100%;background:linear-gradient(90deg,#53c7f4,#f6c36b);transform:scaleX(0);transform-origin:left;animation:intro-progress 2.15s ease forwards}
-.arrival-intro-enter-active,.arrival-intro-leave-active{transition:opacity .35s ease}
-.arrival-intro-leave-to{opacity:0}
-@keyframes transition-flight{0%{left:-75%;transform:translateY(70px) rotate(8deg) scale(.72)}45%{transform:translateY(-12px) rotate(-2deg) scale(1.03)}100%{left:115%;transform:translateY(-75px) rotate(-8deg) scale(.82)}}
-@keyframes transition-pulse{from{transform:scale(.8);opacity:.5}to{transform:scale(1.15);opacity:1}}
-@keyframes intro-landing{0%{left:-70%;top:16%;transform:rotate(12deg) scale(.7);opacity:0}15%{opacity:1}62%{left:30%;top:34%;transform:rotate(3deg) scale(1)}82%{left:48%;top:38%;transform:rotate(0) scale(.94)}100%{left:115%;top:43%;transform:rotate(-2deg) scale(.8);opacity:0}}
-@keyframes intro-copy-in{from{opacity:0;transform:translateY(18px);filter:blur(8px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
-@keyframes intro-progress{to{transform:scaleX(1)}}
-@keyframes orbit-breathe{from{transform:scale(.96);opacity:.55}to{transform:scale(1.04);opacity:1}}
-
-
-.footer {
-  background: var(--primary-950);
-  color: #94a3b8;
-  padding: 56px 0 0 0;
-  margin-top: auto;
-}
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.5fr;
-  gap: 40px;
-  padding-bottom: 48px;
-}
-
-.footer-logo .brand-name {
-  color: #ffffff;
-}
-
-.footer-desc {
-  font-size: 0.875rem;
-  line-height: 1.6;
-  margin-top: 16px;
-  color: #64748b;
-}
-
-.footer-col h4 {
-  color: #ffffff;
-  font-size: 1rem;
-  margin-bottom: 16px;
-  font-weight: 700;
-}
-
-.footer-col ul {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.footer-col a {
-  font-size: 0.875rem;
-  color: #94a3b8;
-  transition: color 0.2s ease;
-}
-
-.footer-col a:hover {
-  color: var(--brand-sky);
-}
-
-.tech-tag {
-  display: inline-block;
-  background: var(--primary-900);
-  color: var(--brand-sky);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: 1px solid var(--primary-800);
-}
-
-.demo-info {
-  font-size: 0.8125rem;
-  margin-bottom: 6px;
-}
-
-.status-indicator {
-  margin-top: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: rgba(16, 185, 129, 0.1);
-  color: #34d399;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.dot-online {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 8px #10b981;
-}
-
-.footer-bottom {
-  border-top: 1px solid var(--primary-900);
-  padding: 24px 0;
-  font-size: 0.8125rem;
-  color: #64748b;
-}
-
-.bottom-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-@media (max-width: 900px) {
-  .footer-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .nav-links {
-    display: none;
-  }
-}
-
-@media (max-width: 600px) {
-  .footer-grid {
-    grid-template-columns: 1fr;
-  }
-  .bottom-content {
-    flex-direction: column;
-    gap: 8px;
-    text-align: center;
-  }
-}
+.app-layout{min-height:100vh;display:flex;flex-direction:column;background:#f8fafc}
+.navbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-bottom:1px solid #e7edf2}
+.nav-content{height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand-logo{display:flex;align-items:center;gap:11px;flex-shrink:0}
+.logo-icon{width:39px;height:39px;border-radius:50%;display:grid;place-items:center;background:#102f49;color:#e9c18b;font-size:18px;border:1px solid #d4b17d}
+.logo-text{display:flex;flex-direction:column;gap:2px}
+.logo-text strong{font-size:13px;letter-spacing:.2em;color:#122f48;font-weight:900}
+.logo-text small{font-size:8px;letter-spacing:.3em;color:#9a774d;font-weight:800}
+.nav-links{display:flex;align-items:center;gap:7px}
+.nav-item{padding:10px 12px;border-radius:3px;color:#64788a;font-size:11px;font-weight:800;transition:color .2s,background .2s}
+.nav-item:hover,.nav-item.active{color:#153b59;background:#edf3f7}
+.nav-actions{display:flex;align-items:center;gap:17px;flex-shrink:0}
+.nav-login{font-size:11px;font-weight:800;color:#23435d}
+.nav-register{display:flex;align-items:center;gap:15px;background:#102f49;color:#fff;padding:12px 16px;border-radius:3px;font-size:11px;font-weight:800;transition:background .2s}
+.nav-register:hover{background:#1b4b6b}.nav-register span{font-size:17px;color:#e8bd82}
+.user-pill{display:flex;align-items:center;gap:8px;color:#17354e;font-size:11px;font-weight:800}
+.avatar{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#e9f0f5;color:#173b59}
+.nav-logout{border:0;background:transparent;color:#9a6841;font:800 11px var(--font-ui);cursor:pointer}
+.main-content{flex:1;min-width:0}
+.footer{background:#081d31;color:#a8b8c5;padding-top:58px}
+.footer-main{display:grid;grid-template-columns:1.7fr .8fr .8fr 1.25fr;gap:48px;padding-bottom:48px}
+.footer-brand p{max-width:330px;color:#8fa3b3;font-size:11px;line-height:1.9;margin-top:20px}
+.footer-brand .logo-text strong{color:#fff}.footer-brand .logo-text small{color:#d5ad77}
+.footer-links{display:flex;flex-direction:column;align-items:flex-start;gap:13px}
+.footer-links strong,.footer-note>strong{font-size:9px;letter-spacing:.2em;color:#e4bd86;margin-bottom:5px}
+.footer-links a{font-size:11px;color:#a8b8c5;transition:color .2s}.footer-links a:hover{color:#fff}
+.footer-note{border-left:1px solid rgba(255,255,255,.14);padding-left:26px}
+.footer-star{display:block;font-size:25px;color:#e4bd86;margin-bottom:13px}
+.footer-note>strong{color:#fff}.footer-note p{font-size:11px;line-height:1.9;color:#8fa3b3;margin-top:10px}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:18px 0}
+.footer-bottom .container{display:flex;justify-content:space-between;gap:20px;color:#71889a;font-size:8px;letter-spacing:.16em;font-weight:700}
+@media(max-width:950px){.nav-links{display:none}.footer-main{grid-template-columns:1.4fr 1fr 1fr}.footer-note{grid-column:1/-1;border-left:0;border-top:1px solid rgba(255,255,255,.14);padding:20px 0 0}}
+@media(max-width:600px){.nav-content{height:66px;gap:10px}.nav-actions{gap:10px}.nav-register{padding:10px 11px}.user-pill span:last-child{display:none}.footer-main{grid-template-columns:1fr 1fr;gap:30px}.footer-brand,.footer-note{grid-column:1/-1}.footer-note{padding-top:18px}.footer-bottom .container{flex-direction:column;align-items:center;text-align:center}}
 </style>
