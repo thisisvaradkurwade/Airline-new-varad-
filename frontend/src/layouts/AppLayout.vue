@@ -269,7 +269,7 @@ function handleLogout() {
 .main-content {
   flex: 1;
   position: relative;
-  overflow: clip;
+  overflow: visible;
 }
 .arrival-intro{position:fixed;inset:0;z-index:2100;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#164b70 0%,#09243f 48%,#030d1b 100%)}
 .intro-orbit{position:absolute;width:min(70vw,680px);aspect-ratio:1;border:1px solid rgba(154,221,249,.14);border-radius:50%;box-shadow:0 0 70px rgba(50,171,226,.08),inset 0 0 70px rgba(50,171,226,.04)}
