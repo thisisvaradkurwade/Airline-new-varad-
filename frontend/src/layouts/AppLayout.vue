@@ -48,42 +48,8 @@
 
     <!-- Main View Outlet -->
     <main class="main-content">
-      <Transition name="page-reveal" mode="out-in">
-        <router-view :key="$route.fullPath" />
-      </Transition>
+      <router-view />
     </main>
-    <Transition name="flight-overlay">
-      <div v-if="isFlying" class="flight-transition" aria-hidden="true">
-        <div class="flight-transition-glow"></div>
-        <div class="flight-transition-plane">
-          <svg viewBox="0 0 420 180" role="presentation">
-            <path d="M18 86 Q28 72 58 70 L330 70 Q370 72 402 90 Q370 108 330 110 L58 102 Q28 100 18 86Z" fill="#f8fcff" stroke="#b9e4f8" stroke-width="3"/>
-            <path d="M150 72 L220 8 Q235 0 250 10 L220 74 L258 108 L218 108 L150 72Z" fill="#a9d7f0" stroke="#d8f2ff" stroke-width="2"/>
-            <path d="M55 72 L90 36 Q102 28 114 36 L100 76 L122 106 L100 106 L55 100Z" fill="#c6e6f7"/>
-            <path d="M34 88 L355 88" stroke="#087db9" stroke-width="8"/>
-            <path d="M48 78 L320 78" stroke="#f5bd61" stroke-width="3"/>
-          </svg>
-        </div>
-        <div class="flight-transition-label">SKYWINGS <span>·</span> NEXT DESTINATION</div>
-      </div>
-    </Transition>
-    <Transition name="arrival-intro">
-      <div v-if="showArrivalIntro" class="arrival-intro" aria-label="SkyWings welcome animation">
-        <div class="intro-orbit orbit-a"></div><div class="intro-orbit orbit-b"></div>
-        <div class="intro-runway"></div>
-        <div class="intro-plane">
-          <svg viewBox="0 0 420 180" role="presentation">
-            <path d="M18 86 Q28 72 58 70 L330 70 Q370 72 402 90 Q370 108 330 110 L58 102 Q28 100 18 86Z" fill="#f8fcff" stroke="#b9e4f8" stroke-width="3"/>
-            <path d="M150 72 L220 8 Q235 0 250 10 L220 74 L258 108 L218 108 L150 72Z" fill="#a9d7f0" stroke="#d8f2ff" stroke-width="2"/>
-            <path d="M55 72 L90 36 Q102 28 114 36 L100 76 L122 106 L100 106 L55 100Z" fill="#c6e6f7"/>
-            <path d="M34 88 L355 88" stroke="#087db9" stroke-width="8"/>
-            <path d="M48 78 L320 78" stroke="#f5bd61" stroke-width="3"/>
-          </svg>
-        </div>
-        <div class="intro-copy"><span>WELCOME ABOARD</span><strong>SKYWINGS</strong><small>YOUR JOURNEY STARTS HERE</small></div>
-        <div class="intro-progress"><i></i></div>
-      </div>
-    </Transition>
 
     <!-- Modern Footer -->
     <footer class="footer">
@@ -143,18 +109,14 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/authStore';
 
 const authStore = useAuthStore();
 const router = useRouter();
-const isFlying = ref(false);
 const showArrivalIntro = ref(false);
 let introTimer;
-let flightTimer;
-let removeBefore;
-let removeAfter;
 
 const userInitial = computed(() => {
   return authStore.user?.name ? authStore.user.name.charAt(0).toUpperCase() : 'U';
@@ -165,21 +127,6 @@ onMounted(() => {
     showArrivalIntro.value = true;
     introTimer = window.setTimeout(() => { showArrivalIntro.value = false; }, 2300);
   }
-  removeBefore = router.beforeEach((to, from) => {
-    if (from.path !== to.path && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      isFlying.value = true;
-      window.clearTimeout(flightTimer);
-    }
-  });
-  removeAfter = router.afterEach(() => {
-    flightTimer = window.setTimeout(() => { isFlying.value = false; }, 1050);
-  });
-});
-onBeforeUnmount(() => {
-  window.clearTimeout(introTimer);
-  window.clearTimeout(flightTimer);
-  if (removeBefore) removeBefore();
-  if (removeAfter) removeAfter();
 });
 
 function handleLogout() {
@@ -324,19 +271,6 @@ function handleLogout() {
   position: relative;
   overflow: clip;
 }
-.page-reveal-enter-active,.page-reveal-leave-active{transition:opacity .32s ease,transform .32s cubic-bezier(.2,.7,.2,1)}
-.page-reveal-enter-from{opacity:0;transform:translateY(13px) scale(.995)}
-.page-reveal-leave-to{opacity:0;transform:translateY(-9px) scale(.995)}
-.flight-transition{position:fixed;inset:0;z-index:2000;overflow:hidden;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 52%,rgba(19,92,137,.96),rgba(4,18,36,.98) 65%,#020b18);pointer-events:all}
-.flight-transition:before,.flight-transition:after{content:"";position:absolute;left:-20%;width:140%;height:1px;background:linear-gradient(90deg,transparent,rgba(129,218,255,.55),transparent);transform:rotate(-12deg)}
-.flight-transition:before{top:30%}.flight-transition:after{top:72%;opacity:.45}
-.flight-transition-glow{position:absolute;width:65vw;height:65vw;border-radius:50%;background:radial-gradient(circle,rgba(65,184,239,.2),transparent 68%);animation:transition-pulse .9s ease-in-out infinite alternate}
-.flight-transition-plane{position:absolute;width:min(72vw,680px);left:-75%;top:35%;animation:transition-flight 1.05s cubic-bezier(.22,.65,.25,1) forwards;filter:drop-shadow(0 18px 30px rgba(0,0,0,.35))}
-.flight-transition-plane svg{width:100%;display:block}
-.flight-transition-label{position:absolute;bottom:12%;color:#d9f4ff;font-size:11px;letter-spacing:.38em;font-weight:800;opacity:.9}
-.flight-transition-label span{color:#f5bd61}
-.flight-overlay-enter-active,.flight-overlay-leave-active{transition:opacity .22s ease}
-.flight-overlay-enter-from,.flight-overlay-leave-to{opacity:0}
 .arrival-intro{position:fixed;inset:0;z-index:2100;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#164b70 0%,#09243f 48%,#030d1b 100%)}
 .intro-orbit{position:absolute;width:min(70vw,680px);aspect-ratio:1;border:1px solid rgba(154,221,249,.14);border-radius:50%;box-shadow:0 0 70px rgba(50,171,226,.08),inset 0 0 70px rgba(50,171,226,.04)}
 .orbit-a{animation:orbit-breathe 2.4s ease-in-out infinite alternate}.orbit-b{width:min(48vw,460px);animation:orbit-breathe 2.4s .4s ease-in-out infinite alternate}
