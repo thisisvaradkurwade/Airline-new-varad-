@@ -1,36 +1,93 @@
 <template>
-  <main class="auth-experience register-experience">
-    <section class="auth-visual">
-      <div class="auth-visual-sky"></div><div class="auth-visual-grid"></div>
-      <div class="auth-visual-brand"><span class="brand-wing">✈</span><span>SKYWINGS<small>THE ART OF TRAVEL</small></span></div>
-      <div class="auth-visual-copy"><span class="auth-kicker">MAKE ROOM FOR MORE</span><h1>A world of<br /><em>possibilities.</em></h1><p>Create your SkyWings account and bring every part of your journey together — from choosing your seat to reaching your destination.</p></div>
-      <div class="auth-visual-plane" aria-hidden="true"><svg viewBox="0 0 520 190"><path d="M15 94 Q25 77 64 74 L422 74 Q472 78 505 96 Q472 114 422 118 L64 112 Q25 110 15 94Z" fill="#f5f8fb" stroke="#b9d2e3" stroke-width="2"/><path d="M170 78 L248 10 Q263 2 277 10 L252 80 L295 111 L251 112 L170 78Z" fill="#a9cce2"/><path d="M67 78 L101 43 Q111 37 120 43 L108 80 L128 111 L103 111 L67 110Z" fill="#c6dfed"/><path d="M31 94 L453 94" stroke="#137cb1" stroke-width="7"/><path d="M62 86 L390 86" stroke="#e6b56f" stroke-width="3"/></svg></div>
-      <div class="auth-visual-footer"><span>02</span><i></i><span>WELCOME TO A BETTER WAY TO FLY</span></div>
-    </section>
-    <section class="auth-form-side">
-      <div class="auth-mobile-brand"><span>✈</span> SKYWINGS</div>
-      <div class="auth-form-wrap">
-        <router-link to="/" class="back-home">← <span>Back to home</span></router-link>
-        <div class="auth-heading"><span class="auth-kicker">JOIN THE JOURNEY</span><h2>Let's get you <em>started.</em></h2><p>A few details, then the world is yours.</p></div>
-        <div v-if="errorMessage" class="auth-error" role="alert">{{ errorMessage }}</div>
-        <div v-if="successMessage" class="auth-notice" role="status">{{ successMessage }}</div>
-        <form @submit.prevent="handleRegister" class="premium-form">
-          <label class="premium-field"><span>Full name</span><input v-model.trim="form.name" type="text" autocomplete="name" placeholder="Your full name" required /></label>
-          <label class="premium-field"><span>Email address</span><input v-model.trim="form.email" type="email" autocomplete="email" placeholder="you@example.com" required /></label>
-          <label class="premium-field"><span>Phone number</span><input v-model.trim="form.phone" type="tel" autocomplete="tel" placeholder="+91 98765 43210" required /></label>
-          <div class="register-passwords">
-            <label class="premium-field"><span>Password</span><input v-model="form.password" type="password" autocomplete="new-password" placeholder="At least 6 characters" minlength="6" required /></label>
-            <label class="premium-field"><span>Confirm password</span><input v-model="form.confirmPassword" type="password" autocomplete="new-password" placeholder="Repeat password" required /></label>
+  <div class="auth-page page-wrapper">
+    <div class="container-narrow">
+      <div class="auth-card card">
+        <div class="auth-header">
+          <div class="auth-icon">✈</div>
+          <h1 class="auth-title">Create Passenger Account</h1>
+          <p class="auth-subtitle">Create an account to manage your passenger profile and reservations.</p>
+        </div>
+
+        <div v-if="errorMessage" class="error-banner">
+          ⚠️ {{ errorMessage }}
+        </div>
+
+        <div v-if="successMessage" class="success-banner">
+          {{ successMessage }}
+        </div>
+
+        <form @submit.prevent="handleRegister" class="auth-form">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input 
+              type="text" 
+              v-model="form.name" 
+              class="form-input" 
+              placeholder="e.g. Aarav Sharma" 
+              required 
+            />
           </div>
-          <button class="auth-submit" type="submit" :disabled="loading"><span>{{ loading ? 'Creating your account…' : 'Create your SkyWings account' }}</span><b>↗</b></button>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input 
+                type="email" 
+                v-model="form.email" 
+                class="form-input" 
+                placeholder="name@example.com" 
+                required 
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input 
+                type="tel" 
+                v-model="form.phone" 
+                class="form-input" 
+                placeholder="+91-9876543210" 
+                required 
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Password (min 6 chars)</label>
+              <input 
+                type="password" 
+                v-model="form.password" 
+                class="form-input" 
+                placeholder="••••••••" 
+                required 
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <input 
+                type="password" 
+                v-model="form.confirmPassword" 
+                class="form-input" 
+                placeholder="••••••••" 
+                required 
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-full" :disabled="loading">
+            <span v-if="loading">Creating Account...</span>
+            <span v-else>Register & Continue</span>
+          </button>
         </form>
-        <p class="auth-switch">Already flying with us? <router-link to="/login">Sign in</router-link></p>
-        <div class="auth-security"><span>✦</span> Your details are handled securely.</div>
+
+        <div class="auth-footer">
+          <p>Already have an account? <router-link to="/login" class="link-highlight">Sign In</router-link></p>
+        </div>
       </div>
-      <div class="auth-side-bottom"><span>SKYWINGS AIRLINES</span><span>TRAVEL BEAUTIFULLY.</span></div>
-    </section>
-    <div v-if="loading" class="signin-flight-overlay" aria-live="polite"><div class="signin-flight-orbit"></div><div class="signin-flight-plane">✈</div><span>PREPARING FOR TAKEOFF</span><strong>Your journey awaits.</strong><i></i></div>
-  </main>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -40,7 +97,15 @@ import { useAuthStore } from '../stores/authStore';
 
 const router = useRouter();
 const authStore = useAuthStore();
-const form = ref({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
+
+const form = ref({
+  name: '',
+  email: '',
+  phone: '',
+  password: '',
+  confirmPassword: ''
+});
+
 const loading = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
@@ -48,29 +113,36 @@ const successMessage = ref('');
 async function handleRegister() {
   errorMessage.value = '';
   successMessage.value = '';
+
   if (form.value.password !== form.value.confirmPassword) {
-    errorMessage.value = 'Your passwords do not match.';
+    errorMessage.value = 'Passwords do not match.';
     return;
   }
+
   if (form.value.password.length < 6) {
-    errorMessage.value = 'Your password must contain at least 6 characters.';
+    errorMessage.value = 'Password must be at least 6 characters.';
     return;
   }
+
   loading.value = true;
   try {
     const response = await authStore.register({
-      name: form.value.name, email: form.value.email, phone: form.value.phone,
-      password: form.value.password, confirmPassword: form.value.confirmPassword
+      name: form.value.name,
+      email: form.value.email,
+      phone: form.value.phone,
+      password: form.value.password,
+      confirmPassword: form.value.confirmPassword
     });
+
     if (response.token) {
-      await router.push('/dashboard');
+      router.push('/dashboard');
     } else if (response.requiresEmailConfirmation) {
-      successMessage.value = response.message || 'Check your email to confirm your account, then sign in.';
+      successMessage.value = response.message;
     } else {
-      await router.push('/login');
+      router.push('/dashboard');
     }
   } catch (err) {
-    errorMessage.value = err.message || 'We could not create your account. Please try again.';
+    errorMessage.value = err.message || 'Registration failed. Please try again.';
   } finally {
     loading.value = false;
   }
@@ -78,63 +150,83 @@ async function handleRegister() {
 </script>
 
 <style scoped>
-.auth-experience{min-height:calc(100vh - 72px);display:grid;grid-template-columns:minmax(0,1.08fr) minmax(420px,.92fr);background:#f8fafc;color:#122c45}
-.auth-visual{position:relative;min-height:760px;overflow:hidden;background:radial-gradient(ellipse at 72% 30%,#1a5277 0%,#0b2b49 40%,#06182d 78%);color:#fff;padding:48px clamp(30px,6vw,90px);isolation:isolate}
-.auth-visual-grid{position:absolute;inset:0;z-index:-1;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);background-size:70px 70px;mask-image:linear-gradient(90deg,black,transparent)}
-.auth-visual-sky{position:absolute;width:550px;height:550px;border-radius:50%;right:-150px;top:-190px;border:1px solid rgba(202,229,244,.13);box-shadow:0 0 0 55px rgba(202,229,244,.025),0 0 0 110px rgba(202,229,244,.02);z-index:-1}
-.auth-visual-brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.18em;font-size:13px}
-.auth-visual-brand>span:last-child{display:flex;flex-direction:column;gap:4px}.auth-visual-brand small{font-size:8px;letter-spacing:.3em;color:#a9c4d6;font-weight:600}
-.brand-wing{width:38px;height:38px;border:1px solid rgba(225,190,139,.6);border-radius:50%;display:grid;place-items:center;color:#e5bd83;font-size:17px}
-.auth-visual-copy{position:relative;z-index:2;margin-top:clamp(100px,17vh,185px);max-width:480px}
-.auth-kicker{font-size:9px;letter-spacing:.28em;font-weight:800;color:#b88e5c}
-.auth-visual-copy h1{font-size:clamp(55px,6vw,83px);line-height:.99;letter-spacing:-.065em;color:#fff;font-weight:600;margin:22px 0}
-.auth-visual-copy h1 em,.auth-heading h2 em{font-family:Georgia,serif;font-weight:400;color:#e6bd84}
-.auth-visual-copy p{max-width:380px;color:#b8cbd9;font-size:14px;line-height:1.9}
-.auth-visual-plane{position:absolute;width:min(68%,590px);right:-5%;bottom:18%;animation:auth-plane-float 8s ease-in-out infinite;filter:drop-shadow(0 22px 28px rgba(0,0,0,.25))}
-.auth-visual-plane svg{width:100%;height:auto}
-.auth-visual-footer{position:absolute;bottom:42px;left:clamp(30px,6vw,90px);right:clamp(30px,6vw,90px);display:flex;align-items:center;gap:14px;font-size:8px;letter-spacing:.23em;color:#9cb6c8;font-weight:800}
-.auth-visual-footer i{height:1px;width:45px;background:#c49b68}
-.auth-form-side{position:relative;display:flex;align-items:center;justify-content:center;padding:70px 36px;background:linear-gradient(145deg,#fff,#f4f7fa)}
-.auth-form-wrap{width:min(100%,420px);margin:auto}
-.back-home{display:inline-flex;align-items:center;gap:10px;color:#6f8191;font-size:12px;font-weight:700;margin-bottom:58px}
-.back-home:first-letter{color:#b78c58}
-.auth-heading{margin-bottom:34px}
-.auth-heading h2{font-size:48px;letter-spacing:-.06em;color:#142f48;margin:13px 0 8px}
-.auth-heading>p{font-size:13px;color:#7c8b98}
-.auth-notice,.auth-error{padding:13px 15px;border-radius:4px;font-size:12px;margin-bottom:18px}
-.auth-notice{background:#edf5fa;color:#28516d;border:1px solid #d6e6f0}.auth-error{background:#fff0ef;color:#a52b24;border:1px solid #f4d2cf}
-.premium-form{display:flex;flex-direction:column;gap:22px}
-.premium-field{display:flex;flex-direction:column;gap:9px}
-.premium-field>span{font-size:11px;color:#344e64;font-weight:800}
-.premium-field input{height:52px;border:1px solid #dce4ea;border-radius:3px;background:#fff;padding:0 15px;color:#17334c;font:500 13px var(--font-ui);outline:none;transition:border .2s,box-shadow .2s}
-.premium-field input:focus{border-color:#9a774e;box-shadow:0 0 0 3px rgba(183,140,88,.12)}
-.premium-field input::placeholder{color:#a5b0ba}
-.auth-submit{height:55px;margin-top:7px;border:0;border-radius:3px;background:#102e48;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font:800 12px var(--font-ui);cursor:pointer;transition:background .2s,transform .2s}
-.auth-submit:hover:not(:disabled){background:#1a4a6a;transform:translateY(-2px)}.auth-submit:disabled{opacity:.7;cursor:wait}.auth-submit b{font-size:20px;color:#e4bc84}
-.auth-switch{margin-top:27px;text-align:center;font-size:12px;color:#748595}.auth-switch a{color:#173b59;font-weight:800;margin-left:4px}
-.auth-security{margin-top:50px;padding-top:18px;border-top:1px solid #e5eaee;color:#8997a3;font-size:10px;text-align:center}.auth-security span{color:#b58b57;margin-right:7px}
-.auth-side-bottom{position:absolute;bottom:24px;left:36px;right:36px;display:flex;justify-content:space-between;color:#a5b1ba;font-size:8px;letter-spacing:.17em;font-weight:800}
-.auth-mobile-brand{display:none}
-.signin-flight-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(ellipse at 50% 42%,#174d70,#08233e 58%,#03101f);color:#fff;animation:overlay-in .25s ease both}
-.signin-flight-orbit{position:absolute;width:min(70vw,560px);aspect-ratio:1;border:1px solid rgba(189,225,244,.17);border-radius:50%;box-shadow:0 0 0 45px rgba(189,225,244,.025),0 0 0 90px rgba(189,225,244,.02);animation:orbit-breathe 2.8s ease-in-out infinite alternate}
-.signin-flight-plane{font-size:clamp(80px,15vw,150px);color:#f4f8fb;filter:drop-shadow(0 12px 22px rgba(0,0,0,.35));animation:takeoff 2.4s ease-in-out infinite}
-.signin-flight-overlay>span{margin-top:36px;color:#d5b17e;font-size:9px;font-weight:800;letter-spacing:.32em}
-.signin-flight-overlay>strong{margin-top:10px;font:400 clamp(30px,5vw,48px) Georgia,serif}
-.signin-flight-overlay>i{position:absolute;bottom:12%;width:160px;height:2px;background:linear-gradient(90deg,transparent,#e5bd84,transparent);animation:runway-glow 1.7s ease-in-out infinite}
-@keyframes auth-plane-float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-16px) rotate(0deg)}}
-@keyframes takeoff{0%{transform:translate(-30vw,35px) rotate(8deg);opacity:0}18%{opacity:1}75%{transform:translate(10vw,-18px) rotate(-5deg);opacity:1}100%{transform:translate(48vw,-100px) rotate(-10deg);opacity:0}}
-@keyframes orbit-breathe{from{transform:scale(.96);opacity:.55}to{transform:scale(1.04);opacity:1}}
-@keyframes runway-glow{0%,100%{opacity:.35;transform:scaleX(.7)}50%{opacity:1;transform:scaleX(1.2)}}
-@keyframes overlay-in{from{opacity:0}to{opacity:1}}
-@media(max-width:900px){.auth-experience{grid-template-columns:1fr}.auth-visual{display:none}.auth-form-side{min-height:calc(100vh - 72px);padding:55px 25px}.auth-mobile-brand{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:42px;font-size:12px;font-weight:800;letter-spacing:.2em;color:#17334c}.auth-mobile-brand span{color:#b58b57;font-size:20px}.back-home{margin-bottom:42px}.auth-side-bottom{bottom:15px}}
-@media(max-width:480px){.auth-form-side{padding:35px 22px 60px}.auth-heading h2{font-size:42px}.auth-security{margin-top:36px}}
-@media(prefers-reduced-motion:reduce){.auth-experience *, .signin-flight-overlay *{animation:none!important;transition:none!important}.signin-flight-plane{transform:none}}
-.register-experience .auth-visual-copy{margin-top:clamp(90px,15vh,160px)}
-.register-experience .auth-form-wrap{max-width:470px}
-.register-experience .auth-heading{margin-bottom:25px}
-.register-experience .auth-heading h2{font-size:clamp(38px,4vw,48px)}
-.register-experience .premium-form{gap:15px}
-.register-passwords{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.register-experience .auth-security{margin-top:28px}
-@media(max-width:480px){.register-passwords{grid-template-columns:1fr}}
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 40px;
+  text-align: center;
+}
+
+.auth-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--brand-sky-soft);
+  color: var(--brand-blue);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 16px auto;
+}
+
+.auth-title {
+  font-size: 1.75rem;
+  margin-bottom: 8px;
+}
+
+.auth-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  margin-bottom: 24px;
+}
+
+.error-banner {
+  background: var(--danger-soft);
+  color: #991b1b;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.success-banner {
+  margin-bottom: 20px;
+  padding: 12px;
+  border: 1px solid #86efac;
+  border-radius: var(--radius-md);
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.auth-form {
+  margin-bottom: 24px;
+}
+
+.auth-footer {
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+}
+
+.link-highlight {
+  color: var(--brand-blue);
+  font-weight: 700;
+}
+
+.link-highlight:hover {
+  text-decoration: underline;
+}
 </style>
