@@ -1,152 +1,136 @@
 <template>
   <div class="passenger-dashboard page-wrapper">
-    <div class="container">
-      <!-- Welcome Header -->
-      <div class="dashboard-header">
+    <div class="container dashboard-container">
+      <section class="welcome-panel">
+        <div class="welcome-copy">
+          <span class="eyebrow">PASSENGER OVERVIEW</span>
+          <h1>Welcome back, {{ firstName }} <span aria-hidden="true">✈</span></h1>
+          <p>Your journeys, bookings and travel details — all in one place.</p>
+        </div>
+        <router-link to="/flights" class="primary-action">
+          <span aria-hidden="true">＋</span> Book a flight
+        </router-link>
+        <div class="welcome-orbit orbit-one"></div>
+        <div class="welcome-orbit orbit-two"></div>
+      </section>
+
+      <section class="stats-grid" aria-label="Booking summary">
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-icon blue">▤</span><span class="stat-caption">ALL TIME</span></div>
+          <strong>{{ totalBookingsCount }}</strong>
+          <span class="stat-label">Total bookings</span>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-icon green">✈</span><span class="stat-caption">CURRENT</span></div>
+          <strong>{{ activeBookingsCount }}</strong>
+          <span class="stat-label">Confirmed bookings</span>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-icon violet">✓</span><span class="stat-caption">COMPLETED</span></div>
+          <strong>{{ boardedBookingsCount }}</strong>
+          <span class="stat-label">Boarded flights</span>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span class="stat-icon amber">↺</span><span class="stat-caption">HISTORY</span></div>
+          <strong>{{ cancelledBookingsCount }}</strong>
+          <span class="stat-label">Cancelled bookings</span>
+        </article>
+      </section>
+
+      <section class="section-heading">
         <div>
-          <h1 class="page-title">Welcome back, {{ authStore.userName }}! ✈️</h1>
-          <p class="page-subtitle">Review your confirmed flight reservations, check-in status, and boarding passes.</p>
+          <span class="eyebrow">QUICK ACCESS</span>
+          <h2>Make your next move</h2>
         </div>
-        <router-link to="/flights" class="btn btn-gold btn-lg">
-          🔍 Book New Flight
-        </router-link>
-      </div>
+      </section>
 
-      <!-- Quick Metrics Cards -->
-      <div class="metrics-grid">
-        <div class="metric-card card">
-          <div class="metric-icon blue-bg">🎫</div>
-          <div class="metric-meta">
-            <span class="metric-val">{{ totalBookingsCount }}</span>
-            <span class="metric-title">Total Bookings</span>
+      <section class="quick-grid" aria-label="Quick actions">
+        <router-link to="/flights" class="quick-card">
+          <span class="quick-icon blue">⌕</span>
+          <span class="quick-text"><strong>Find a flight</strong><small>Explore routes and available seats</small></span>
+          <span class="quick-arrow">↗</span>
+        </router-link>
+        <router-link to="/my-bookings" class="quick-card">
+          <span class="quick-icon violet">▣</span>
+          <span class="quick-text"><strong>My bookings</strong><small>Review or manage reservations</small></span>
+          <span class="quick-arrow">↗</span>
+        </router-link>
+        <router-link to="/boarding-pass" class="quick-card">
+          <span class="quick-icon green">▤</span>
+          <span class="quick-text"><strong>Boarding pass</strong><small>Open your digital travel pass</small></span>
+          <span class="quick-arrow">↗</span>
+        </router-link>
+        <router-link to="/profile" class="quick-card">
+          <span class="quick-icon amber">◎</span>
+          <span class="quick-text"><strong>My profile</strong><small>Update your personal details</small></span>
+          <span class="quick-arrow">↗</span>
+        </router-link>
+      </section>
+
+      <section class="booking-section">
+        <div class="section-heading booking-heading">
+          <div>
+            <span class="eyebrow">YOUR ACTIVITY</span>
+            <h2>Recent bookings</h2>
+            <p>Keep track of your latest reservations.</p>
           </div>
+          <router-link to="/my-bookings" class="view-all">View all bookings <span aria-hidden="true">→</span></router-link>
         </div>
 
-        <div class="metric-card card">
-          <div class="metric-icon green-bg">✈️</div>
-          <div class="metric-meta">
-            <span class="metric-val">{{ activeBookingsCount }}</span>
-            <span class="metric-title">Active Flights</span>
-          </div>
+        <div v-if="loading" class="state-panel" role="status">
+          <span class="spinner"></span>
+          <p>Loading your bookings…</p>
         </div>
-
-        <div class="metric-card card">
-          <div class="metric-icon red-bg">🔄</div>
-          <div class="metric-meta">
-            <span class="metric-val">{{ cancelledBookingsCount }}</span>
-            <span class="metric-title">Cancelled Bookings</span>
-          </div>
+        <div v-else-if="loadError" class="state-panel error-panel" role="alert">
+          <strong>We couldn't load your bookings.</strong>
+          <p>{{ loadError }}</p>
+          <button class="retry-button" @click="loadBookings">Try again</button>
         </div>
-
-        <div class="metric-card card">
-          <div class="metric-icon gold-bg">📱</div>
-          <div class="metric-meta">
-            <span class="metric-val">{{ boardedBookingsCount }}</span>
-            <span class="metric-title">Boarded Flights</span>
-          </div>
+        <div v-else-if="bookings.length === 0" class="state-panel empty-panel">
+          <span class="empty-plane" aria-hidden="true">✈</span>
+          <strong>Your next journey starts here.</strong>
+          <p>You don't have any bookings yet. Search for a flight to get started.</p>
+          <router-link to="/flights" class="empty-cta">Explore flights</router-link>
         </div>
-      </div>
-
-      <!-- Quick Action Cards -->
-      <div class="quick-actions-grid">
-        <router-link to="/flights" class="action-tile card">
-          <div class="tile-icon">🔍</div>
-          <h3>Search Flights</h3>
-          <p>Find available flights across top domestic destinations with live seat inventory.</p>
-        </router-link>
-
-        <router-link to="/my-bookings" class="action-tile card">
-          <div class="tile-icon">📑</div>
-          <h3>My Bookings</h3>
-          <p>View confirmed reservations, download tickets, or release seats on cancellation.</p>
-        </router-link>
-
-        <router-link to="/boarding-pass" class="action-tile card">
-          <div class="tile-icon">🚪</div>
-          <h3>Web Check-in &amp; Pass</h3>
-          <p>Complete web check-in, receive gate clearances, and view scannable digital passes.</p>
-        </router-link>
-
-        <router-link to="/profile" class="action-tile card">
-          <div class="tile-icon">👤</div>
-          <h3>Passenger Profile</h3>
-          <p>Manage account credentials, identity verification, and contact phone numbers.</p>
-        </router-link>
-      </div>
-
-      <!-- Upcoming & Recent Bookings -->
-      <div class="recent-bookings-section card">
-        <div class="section-top-row">
-          <h3 class="card-title">Recent Reservations</h3>
-          <router-link to="/my-bookings" class="btn btn-outline btn-sm">View All ➔</router-link>
+        <div v-else class="booking-list">
+          <article v-for="booking in recentBookings" :key="booking.id" class="booking-row">
+            <div class="airline-mark">✈</div>
+            <div class="booking-main">
+              <div class="booking-route">
+                <strong>{{ cityCode(booking, 'from') }}</strong>
+                <span class="route-line"><i></i>✈<i></i></span>
+                <strong>{{ cityCode(booking, 'to') }}</strong>
+              </div>
+              <div class="booking-meta">
+                <span>{{ booking.flight_number || booking.flight?.flight_number || 'Flight details unavailable' }}</span>
+                <span v-if="booking.booking_date">{{ formatDate(booking.booking_date) }}</span>
+                <span v-if="booking.seat_number">Seat {{ booking.seat_number }}</span>
+                <span v-if="booking.travel_class">{{ booking.travel_class }}</span>
+              </div>
+            </div>
+            <div class="booking-fare">
+              <strong>{{ formatFare(booking.fare) }}</strong>
+              <span class="status-pill" :class="statusClass(booking.booking_status)">{{ readableStatus(booking.booking_status) }}</span>
+            </div>
+            <div class="booking-actions">
+              <router-link :to="'/booking-details/' + booking.id" class="details-link">Details</router-link>
+              <router-link :to="{ path: '/boarding-pass', query: { pnr: booking.pnr } }" class="pass-link" v-if="booking.pnr">Pass</router-link>
+            </div>
+          </article>
         </div>
+        <p v-if="!loading && !loadError && bookings.length > 5" class="more-note">Showing your 5 most recent reservations.</p>
+      </section>
 
-        <div v-if="loading" class="text-center py-24">
-          <div class="spinner"></div>
-          <p>Loading your flight history...</p>
-        </div>
-
-        <div v-else-if="loadError" class="text-center py-24" role="alert">
-          Could not load bookings: {{ loadError }}
-        </div>
-
-        <div v-else-if="bookings.length === 0" class="empty-bookings text-center py-24">
-          <p>No bookings found yet. Ready for your next journey?</p>
-          <router-link to="/flights" class="btn btn-primary btn-sm mt-12">Search Flights Now</router-link>
-        </div>
-
-        <div v-else class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>PNR</th>
-                <th>Flight</th>
-                <th>Route (From ➔ To)</th>
-                <th>Date &amp; Time</th>
-                <th>Seat</th>
-                <th>Class</th>
-                <th>Fare</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="b in bookings.slice(0, 5)" :key="b.id">
-                <td><strong class="pnr-text">{{ b.pnr }}</strong></td>
-                <td><strong>{{ b.flight_number }}</strong></td>
-                <td>
-                  <span class="route-display">
-                    {{ b.flight?.from_city || 'Mumbai' }} ({{ b.flight?.from_code || 'BOM' }})
-                    ➔
-                    {{ b.flight?.to_city || b.destination || 'Delhi' }} ({{ b.flight?.to_code || 'DEL' }})
-                  </span>
-                </td>
-                <td>{{ formatDateTime(b.booking_date) }}</td>
-                <td><span class="seat-pill">{{ b.seat_number }}</span></td>
-                <td>{{ b.travel_class }}</td>
-                <td><strong>₹{{ Number(b.fare).toLocaleString() }}</strong></td>
-                <td><span class="badge" :class="'badge-' + b.booking_status.toLowerCase()">{{ b.booking_status }}</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <router-link :to="'/booking-details/' + b.id" class="btn btn-outline btn-sm">
-                      Details
-                    </router-link>
-                    <router-link :to="'/boarding-pass?pnr=' + b.pnr" class="btn btn-primary btn-sm">
-                      Pass
-                    </router-link>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <footer class="dashboard-footnote">
+        <span class="footnote-dot"></span>
+        Your booking information is retrieved from your SkyWings account.
+      </footer>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '../stores/authStore';
 import { useBookingStore } from '../stores/bookingStore';
 
@@ -155,165 +139,166 @@ const bookingStore = useBookingStore();
 
 const loading = ref(true);
 const loadError = ref('');
-const bookings = computed(() => bookingStore.myBookings);
+const bookings = computed(() => bookingStore.myBookings || []);
+const firstName = computed(() => (authStore.userName || 'traveller').trim().split(/\s+/)[0]);
 
 const totalBookingsCount = computed(() => bookings.value.length);
 const activeBookingsCount = computed(() => bookings.value.filter(b => b.booking_status === 'CONFIRMED').length);
 const cancelledBookingsCount = computed(() => bookings.value.filter(b => b.booking_status === 'CANCELLED').length);
-const boardedBookingsCount = computed(() => bookings.value.filter(b => b.booking_status === 'BOARDED').length);
+const boardedBookingsCount = computed(() => bookings.value.filter(b =>
+  b.booking_status === 'BOARDED' || b.passengers?.some(p => p.boarding?.boarding_status === 'BOARDED')
+).length);
 
-onMounted(async () => {
+const recentBookings = computed(() => [...bookings.value]
+  .sort((a, b) => new Date(b.booking_date || 0) - new Date(a.booking_date || 0))
+  .slice(0, 5));
+
+onMounted(loadBookings);
+
+async function loadBookings() {
+  loading.value = true;
+  loadError.value = '';
   try {
     await bookingStore.fetchUserBookings();
   } catch (err) {
-    loadError.value = err.message || 'Unable to load bookings.';
+    loadError.value = err.message || 'Please check your connection and try again.';
   } finally {
     loading.value = false;
   }
-});
+}
 
-function formatDateTime(str) {
-  if (!str) return '';
-  const d = new Date(str);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+function cityCode(booking, direction) {
+  const flight = booking.flight || {};
+  const code = direction === 'from'
+    ? (flight.from_code || booking.from_code)
+    : (flight.to_code || booking.to_code);
+  const city = direction === 'from'
+    ? (flight.from_city || booking.from_city)
+    : (flight.to_city || booking.to_city || booking.destination);
+  return code || city || '—';
+}
+
+function formatDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Date unavailable';
+  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function formatFare(value) {
+  const amount = Number(value);
+  return Number.isFinite(amount) ? amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }) : '—';
+}
+
+function readableStatus(status) {
+  if (!status) return 'Status unavailable';
+  return status.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function statusClass(status) {
+  return String(status || '').toLowerCase();
 }
 </script>
 
 <style scoped>
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
+.dashboard-container { max-width: 1180px; }
+.welcome-panel {
+  position: relative; overflow: hidden; isolation: isolate;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  min-height: 208px; padding: 42px 48px; margin-bottom: 26px;
+  color: #fff; border-radius: 22px;
+  background: linear-gradient(115deg, #071b35 0%, #103d68 58%, #17618b 100%);
 }
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  margin-bottom: 32px;
+.welcome-copy { position: relative; z-index: 2; }
+.eyebrow { display: block; color: #2784b9; font-size: .68rem; font-weight: 800; letter-spacing: .16em; margin-bottom: 10px; }
+.welcome-panel .eyebrow { color: #9bd8f2; }
+.welcome-panel h1 { margin: 0 0 9px; color: #fff; font-size: clamp(1.8rem, 4vw, 2.55rem); letter-spacing: -.045em; }
+.welcome-panel p { margin: 0; color: #d2e5f2; font-size: .98rem; }
+.primary-action, .empty-cta {
+  position: relative; z-index: 2; display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  padding: 13px 19px; border-radius: 11px; background: #fff; color: #103d68; font-weight: 800; white-space: nowrap;
+  box-shadow: 0 8px 22px #001b3630; transition: transform .2s ease, box-shadow .2s ease;
 }
-
-.metric-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 20px;
+.primary-action:hover, .empty-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 28px #001b3645; }
+.primary-action span { font-size: 1.2rem; }
+.welcome-orbit { position: absolute; z-index: -1; border: 1px solid #ffffff18; border-radius: 50%; }
+.orbit-one { width: 340px; height: 340px; right: 10%; top: -180px; }
+.orbit-two { width: 470px; height: 470px; right: -3%; top: -230px; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 38px; }
+.stat-card { padding: 20px 22px; background: #fff; border: 1px solid #e7edf3; border-radius: 15px; box-shadow: 0 4px 16px #102c4610; }
+.stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+.stat-icon, .quick-icon { display: inline-flex; align-items: center; justify-content: center; border-radius: 11px; font-weight: 800; }
+.stat-icon { width: 38px; height: 38px; font-size: 1.1rem; }
+.stat-caption { color: #9aa8b7; font-size: .62rem; font-weight: 800; letter-spacing: .1em; }
+.stat-card > strong { display: block; color: #102b46; font-size: 2rem; line-height: 1.1; letter-spacing: -.04em; }
+.stat-label { display: block; margin-top: 6px; color: #758496; font-size: .82rem; font-weight: 600; }
+.blue { color: #1766a0; background: #e8f3fb; }
+.green { color: #16805e; background: #e7f7f0; }
+.violet { color: #6552b5; background: #f0edfc; }
+.amber { color: #a66b16; background: #fff4df; }
+.section-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 17px; }
+.section-heading h2 { margin: 0; color: #102b46; font-size: 1.35rem; letter-spacing: -.025em; }
+.section-heading p { margin: 6px 0 0; color: #7a8998; font-size: .86rem; }
+.section-heading .eyebrow { margin-bottom: 5px; }
+.quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 40px; }
+.quick-card { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 17px 15px; background: #fff; border: 1px solid #e7edf3; border-radius: 14px; color: #17344f; transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+.quick-card:hover { transform: translateY(-3px); border-color: #a9cce3; box-shadow: 0 8px 20px #102c4612; }
+.quick-icon { flex: 0 0 40px; width: 40px; height: 40px; font-size: 1.2rem; }
+.quick-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.quick-text strong { font-size: .85rem; }
+.quick-text small { color: #8391a0; font-size: .7rem; line-height: 1.35; }
+.quick-arrow { margin-left: auto; color: #9aabba; font-size: 1rem; }
+.booking-section { padding: 26px; background: #fff; border: 1px solid #e7edf3; border-radius: 17px; box-shadow: 0 4px 18px #102c460c; }
+.booking-heading { align-items: center; margin-bottom: 21px; }
+.view-all { color: #1766a0; font-size: .82rem; font-weight: 800; white-space: nowrap; }
+.view-all span { margin-left: 5px; }
+.booking-list { display: flex; flex-direction: column; }
+.booking-row { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto auto; align-items: center; gap: 16px; padding: 17px 0; border-top: 1px solid #edf1f5; }
+.airline-mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: #1766a0; background: #eaf4fb; }
+.booking-route { display: flex; align-items: center; gap: 13px; color: #17344f; font-size: 1.02rem; }
+.route-line { display: flex; align-items: center; gap: 5px; color: #6f9bb9; font-size: .78rem; }
+.route-line i { display: block; width: 24px; border-top: 1px dashed #a8c3d5; }
+.booking-meta { display: flex; flex-wrap: wrap; gap: 6px 13px; margin-top: 6px; color: #8996a4; font-size: .72rem; }
+.booking-fare { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.booking-fare > strong { color: #17344f; font-size: .9rem; }
+.status-pill { padding: 4px 8px; border-radius: 999px; color: #687787; background: #f0f3f6; font-size: .65rem; font-weight: 800; }
+.status-pill.confirmed, .status-pill.boarded { color: #137452; background: #e8f7f0; }
+.status-pill.cancelled { color: #b44c4c; background: #fff0f0; }
+.status-pill.pending { color: #946313; background: #fff5df; }
+.booking-actions { display: flex; align-items: center; gap: 9px; }
+.details-link, .pass-link { color: #1766a0; font-size: .75rem; font-weight: 800; }
+.pass-link { padding: 7px 10px; border-radius: 8px; background: #edf5fb; }
+.more-note { margin: 14px 0 0; color: #8795a3; font-size: .74rem; text-align: center; }
+.state-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 190px; padding: 24px; border-top: 1px solid #edf1f5; text-align: center; color: #647789; }
+.state-panel p { max-width: 420px; margin: 7px 0 0; font-size: .84rem; }
+.state-panel strong { color: #17344f; }
+.empty-plane { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 13px; border-radius: 15px; color: #1766a0; background: #eaf4fb; font-size: 1.5rem; }
+.empty-cta { margin-top: 16px; padding: 10px 16px; background: #1766a0; color: #fff; font-size: .82rem; }
+.retry-button { margin-top: 14px; padding: 9px 15px; border: 0; border-radius: 8px; background: #1766a0; color: #fff; font-weight: 700; cursor: pointer; }
+.error-panel p { color: #a24b4b; }
+.spinner { width: 27px; height: 27px; border: 3px solid #dcebf5; border-top-color: #1766a0; border-radius: 50%; animation: spin .8s linear infinite; }
+.dashboard-footnote { display: flex; align-items: center; gap: 8px; margin: 17px 2px 0; color: #9aa6b2; font-size: .72rem; }
+.footnote-dot { width: 7px; height: 7px; border-radius: 50%; background: #38a77b; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 900px) {
+  .stats-grid, .quick-grid { grid-template-columns: repeat(2, 1fr); }
+  .welcome-panel { padding: 34px; }
 }
-
-.metric-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-}
-
-.blue-bg { background: var(--brand-sky-soft); color: var(--brand-blue); }
-.green-bg { background: var(--success-soft); color: #065f46; }
-.red-bg { background: var(--danger-soft); color: #991b1b; }
-.gold-bg { background: var(--brand-gold-soft); color: #92400e; }
-
-.metric-meta {
-  display: flex;
-  flex-direction: column;
-}
-
-.metric-val {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: var(--primary-900);
-}
-
-.metric-title {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-.quick-actions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-  margin-bottom: 36px;
-}
-
-.action-tile {
-  padding: 28px 24px;
-  transition: all 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  color: var(--text-main);
-}
-
-.action-tile:hover {
-  transform: translateY(-4px);
-  border-color: var(--brand-blue);
-  box-shadow: var(--shadow-lg);
-}
-
-.tile-icon {
-  font-size: 2rem;
-  margin-bottom: 16px;
-}
-
-.action-tile h3 {
-  font-size: 1.125rem;
-  margin-bottom: 8px;
-}
-
-.action-tile p {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-
-.recent-bookings-section {
-  padding: 28px;
-}
-
-.section-top-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.pnr-text {
-  color: var(--brand-blue);
-  letter-spacing: 0.05em;
-}
-
-.route-display {
-  font-weight: 600;
-  color: var(--primary-800);
-}
-
-.seat-pill {
-  background: #fef3c7;
-  color: #92400e;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-weight: 700;
-  font-size: 0.8125rem;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 6px;
-}
-
-.mt-12 {
-  margin-top: 12px;
-}
-
-@media (max-width: 768px) {
-  .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
+@media (max-width: 620px) {
+  .welcome-panel { align-items: flex-start; flex-direction: column; padding: 28px 23px; }
+  .welcome-panel h1 { font-size: 1.8rem; }
+  .stats-grid { gap: 10px; }
+  .stat-card { padding: 15px; }
+  .stat-card > strong { font-size: 1.65rem; }
+  .quick-grid { gap: 10px; }
+  .quick-card { align-items: flex-start; flex-direction: column; padding: 13px; }
+  .quick-arrow { display: none; }
+  .booking-section { padding: 19px 15px; }
+  .booking-heading { align-items: flex-start; }
+  .booking-row { grid-template-columns: 36px minmax(0, 1fr); gap: 11px; }
+  .airline-mark { width: 36px; height: 36px; }
+  .booking-fare { grid-column: 2; align-items: flex-start; flex-direction: row; }
+  .booking-actions { grid-column: 2; }
+  .route-line i { width: 13px; }
+  .booking-meta { gap: 5px 9px; }
 }
 </style>
