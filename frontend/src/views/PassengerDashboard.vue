@@ -215,7 +215,33 @@ const searchClass = ref('Economy');
 const feedbackRating = ref('5');
 const feedbackNote = ref('');
 const feedbackMessage = ref('');
-const bookings = computed(() => bookingStore.myBookings || []);
+function relationRecord(value) {
+  if (Array.isArray(value)) return value[0] && typeof value[0] === 'object' ? value[0] : {};
+  return value && typeof value === 'object' ? value : {};
+}
+
+const bookings = computed(() => {
+  const rows = bookingStore.myBookings;
+  if (!Array.isArray(rows)) return [];
+  return rows.filter(row => row && typeof row === 'object').map(row => {
+    const flight = relationRecord(row.flight || row.flights);
+    const seat = relationRecord(row.seat || row.seats);
+    const passengerRows = Array.isArray(row.passengers)
+      ? row.passengers
+      : row.passengers && typeof row.passengers === 'object'
+        ? [row.passengers]
+        : [];
+    return {
+      ...row,
+      flight,
+      seat,
+      passengers: passengerRows,
+      flight_number: row.flight_number || flight.flight_number || '',
+      seat_number: row.seat_number || seat.seat_number || '',
+      destination: row.destination || flight.destination || flight.to_city || ''
+    };
+  });
+});
 const firstName = computed(() => (authStore.userName || 'traveller').trim().split(/\s+/)[0]);
 
 const totalBookingsCount = computed(() => bookings.value.length);
@@ -226,7 +252,8 @@ const totalCharges = computed(() => bookings.value.reduce((sum, booking) => {
 const activeBookingsCount = computed(() => bookings.value.filter(b => b.booking_status === 'CONFIRMED').length);
 const cancelledBookingsCount = computed(() => bookings.value.filter(b => b.booking_status === 'CANCELLED').length);
 const boardedBookingsCount = computed(() => bookings.value.filter(b =>
-  b.booking_status === 'BOARDED' || b.passengers?.some(p => p.boarding?.boarding_status === 'BOARDED')
+  String(b.booking_status || '').toUpperCase() === 'BOARDED' ||
+  b.passengers.some(p => String(p?.boarding?.boarding_status || '').toUpperCase() === 'BOARDED')
 ).length);
 
 const recentBookings = computed(() => [...bookings.value]
