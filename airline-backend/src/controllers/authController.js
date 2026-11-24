@@ -126,29 +126,56 @@ async function login(req, res, next) {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // Step 1: Check Local User Store
+    // Prefer Supabase Auth so the returned token can authorize owner-scoped database operations.
     const localUser = userStore.getUserByEmail(cleanEmail);
-    if (localUser) {
-      const passwordMatch = userStore.verifyPassword(password, localUser.password_hash);
-      if (passwordMatch) {
-        if (localUser.status !== 'ACTIVE') {
-          return res.status(403).json({
-            success: false,
-            message: 'Account is deactivated. Please contact customer support.'
-          });
-        }
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password
+      });
 
-        const token = userStore.generateToken(localUser);
+      if (!error && data?.session && data.user) {
+        const client = createSupabaseClient(data.session.access_token);
+        const profile = await getProfile(client, data.user.id, {
+          id: data.user.id,
+          name: data.user.user_metadata?.name || cleanEmail.split('@')[0],
+          email: cleanEmail,
+          role: data.user.user_metadata?.role || 'passenger',
+          phone: data.user.user_metadata?.phone || '',
+          status: 'ACTIVE'
+        });
+
+        return res.json({
+          success: true,
+          message: `Welcome back, ${profile.name}!`,
+          token: data.session.access_token,
+          user: publicUser(profile)
+        });
+      }
+
+      if (error?.message?.includes('Email not confirmed')) {
+        return res.status(401).json({
+          success: false,
+          message: 'Your email is not confirmed. Please confirm it before signing in.'
+        });
+      }
+    } catch (supabaseErr) {
+      console.warn('[AUTH] Supabase sign-in check failed:', supabaseErr.message);
+    }
+
+    // Keep legacy local authentication only for administrators. Passenger bookings
+    // require a Supabase Auth token so RLS can verify auth.uid().
+    if (localUser && localUser.role === 'admin') {
+      const passwordMatch = userStore.verifyPassword(password, localUser.password_hash);
+      if (passwordMatch && localUser.status === 'ACTIVE') {
         return res.json({
           success: true,
           message: `Welcome back, ${localUser.name}!`,
-          token,
+          token: userStore.generateToken(localUser),
           user: userStore.toPublicUser(localUser)
         });
       }
     }
-
-    // Step 2: Fallback to Supabase Auth
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
