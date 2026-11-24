@@ -98,7 +98,7 @@
       <div class="modal-card modal-lg">
         <div class="modal-header">
           <h3>{{ isEditing ? 'Edit Flight Schedule' : 'Create New Flight Route' }}</h3>
-          <button @click="showModal = false" class="modal-close">×</button>
+          <button @click="showModal = false" class="modal-close" type="button" aria-label="Close dialog" title="Close dialog">× <span>Close</span></button>
         </div>
 
         <form @submit.prevent="saveFlight">
