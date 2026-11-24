@@ -3,6 +3,7 @@
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-backdrop"></div>
+      <AirportAnimation class="hero-airport" />
       <div class="container hero-content">
         <div class="hero-badge">
           SkyWings Airlines · Reservation &amp; Seat Management System
@@ -153,6 +154,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useFlightStore } from '../stores/flightStore';
+import AirportAnimation from '../components/AirportAnimation.vue';
 
 defineOptions({ name: 'HomePage' });
 
@@ -193,12 +195,20 @@ function viewFlight(flight) {
   overflow: hidden;
 }
 
-.hero-backdrop {
+ .hero-backdrop {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle at 50% 20%, rgba(2, 132, 199, 0.25) 0%, transparent 70%);
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(4, 15, 30, .48), rgba(5, 18, 34, .30) 58%, rgba(5, 18, 34, .62));
   pointer-events: none;
 }
+
+.hero-airport {
+  position: absolute;
+  inset: 0;
+  opacity: .96;
+}
+
 
 .hero-content {
   position: relative;
