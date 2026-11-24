@@ -103,6 +103,16 @@
           <span class="quick-text"><strong>Seat matrix</strong><small>Choose a flight to inspect its cabin layout</small></span>
           <span class="quick-arrow">↗</span>
         </router-link>
+        <router-link to="/my-bookings" class="quick-card">
+          <span class="quick-icon amber">◷</span>
+          <span class="quick-text"><strong>Booking status</strong><small>Check confirmed, pending and cancelled reservations</small></span>
+          <span class="quick-arrow">↗</span>
+        </router-link>
+        <router-link to="/flights" class="quick-card">
+          <span class="quick-icon violet">▤</span>
+          <span class="quick-text"><strong>Seat availability</strong><small>View available seats before selecting a flight</small></span>
+          <span class="quick-arrow">↗</span>
+        </router-link>
       </section>
 
       <section class="feedback-panel" aria-labelledby="feedback-title">
@@ -336,7 +346,7 @@ function statusClass(status) {
 .spend-overview { display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.7fr); gap: 22px; align-items: center; padding: 20px 25px; margin: 0 0 36px; background: #f1f7fb; border: 1px solid #dceaf3; border-radius: 15px; }
 .spend-total strong { display: block; color: #102b46; font-size: 1.8rem; letter-spacing: -.04em; }
 .spend-total small { color: #7a8998; font-size: .72rem; }
-.class-breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.class-breakdown { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .class-breakdown > div { display: flex; align-items: center; gap: 7px; padding: 11px; background: #fff; border: 1px solid #e2ebf2; border-radius: 10px; color: #65788a; font-size: .73rem; }
 .class-breakdown strong { margin-left: auto; color: #17344f; font-size: 1rem; }
 .class-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; }
@@ -417,6 +427,7 @@ function statusClass(status) {
 @media (max-width: 900px) {
   .stats-grid, .quick-grid { grid-template-columns: repeat(2, 1fr); }
   .dashboard-search, .spend-overview, .feedback-panel { grid-template-columns: 1fr; }
+  .class-breakdown { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dashboard-search-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .welcome-panel { padding: 34px; }
 }
@@ -425,7 +436,7 @@ function statusClass(status) {
   .dashboard-search { padding: 20px 16px; }
   .dashboard-search-form { grid-template-columns: 1fr; }
   .dashboard-search-form button { width: 100%; }
-  .class-breakdown { grid-template-columns: 1fr; }
+  .class-breakdown { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .feedback-panel { padding: 20px 16px; }
   .welcome-panel h1 { font-size: 1.8rem; }
   .stats-grid { gap: 10px; }
