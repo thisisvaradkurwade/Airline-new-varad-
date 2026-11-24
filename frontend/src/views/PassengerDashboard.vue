@@ -61,6 +61,7 @@
           <div><span class="class-dot economy-dot"></span><span>Economy</span><strong>{{ classCount('Economy') }}</strong></div>
           <div><span class="class-dot business-dot"></span><span>Business</span><strong>{{ classCount('Business') }}</strong></div>
           <div><span class="class-dot first-dot"></span><span>First Class</span><strong>{{ classCount('First Class') }}</strong></div>
+          <div><span class="class-dot general-dot"></span><span>General</span><strong>{{ classCount('General') }}</strong></div>
         </div>
       </section>
 
@@ -102,6 +103,28 @@
           <span class="quick-text"><strong>Seat matrix</strong><small>Choose a flight to inspect its cabin layout</small></span>
           <span class="quick-arrow">↗</span>
         </router-link>
+      </section>
+
+      <section class="feedback-panel" aria-labelledby="feedback-title">
+        <div class="feedback-copy">
+          <span class="eyebrow">HELP US IMPROVE</span>
+          <h2 id="feedback-title">How was your SkyWings experience?</h2>
+          <p>Share a quick note about your booking or travel experience. Feedback is saved in this browser on this device.</p>
+          <div v-if="feedbackMessage" class="feedback-confirmation" role="status">{{ feedbackMessage }}</div>
+        </div>
+        <form class="feedback-form" @submit.prevent="submitFeedback">
+          <label for="feedback-rating">Your rating</label>
+          <select id="feedback-rating" v-model="feedbackRating" required>
+            <option value="5">★★★★★ — Excellent</option>
+            <option value="4">★★★★☆ — Good</option>
+            <option value="3">★★★☆☆ — Average</option>
+            <option value="2">★★☆☆☆ — Needs improvement</option>
+            <option value="1">★☆☆☆☆ — Poor</option>
+          </select>
+          <label for="feedback-note">Your feedback</label>
+          <textarea id="feedback-note" v-model.trim="feedbackNote" rows="3" maxlength="600" placeholder="Tell us what went well or what we can improve…" required></textarea>
+          <button type="submit" :disabled="!feedbackNote">Save feedback <span aria-hidden="true">→</span></button>
+        </form>
       </section>
 
       <section class="booking-section">
@@ -179,6 +202,9 @@ const loadError = ref('');
 const searchFrom = ref('');
 const searchTo = ref('');
 const searchClass = ref('Economy');
+const feedbackRating = ref('5');
+const feedbackNote = ref('');
+const feedbackMessage = ref('');
 const bookings = computed(() => bookingStore.myBookings || []);
 const firstName = computed(() => (authStore.userName || 'traveller').trim().split(/\s+/)[0]);
 
@@ -210,6 +236,24 @@ function classCount(name) {
   return bookings.value.filter(booking =>
     String(booking.travel_class || '').toLowerCase() === name.toLowerCase()
   ).length;
+}
+
+function submitFeedback() {
+  const entry = {
+    rating: Number(feedbackRating.value),
+    message: feedbackNote.value,
+    submittedAt: new Date().toISOString(),
+    user: authStore.user?.email || authStore.userName || 'Passenger'
+  };
+  try {
+    const saved = JSON.parse(localStorage.getItem('skywings_feedback') || '[]');
+    saved.unshift(entry);
+    localStorage.setItem('skywings_feedback', JSON.stringify(saved.slice(0, 25)));
+    feedbackNote.value = '';
+    feedbackMessage.value = 'Thanks — your feedback has been saved on this device.';
+  } catch {
+    feedbackMessage.value = 'Feedback could not be saved in this browser. Please try again.';
+  }
 }
 
 async function loadBookings() {
@@ -296,7 +340,7 @@ function statusClass(status) {
 .class-breakdown > div { display: flex; align-items: center; gap: 7px; padding: 11px; background: #fff; border: 1px solid #e2ebf2; border-radius: 10px; color: #65788a; font-size: .73rem; }
 .class-breakdown strong { margin-left: auto; color: #17344f; font-size: 1rem; }
 .class-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; }
-.economy-dot { background: #16805e; } .business-dot { background: #3977c7; } .first-dot { background: #c18a25; }
+.economy-dot { background: #16805e; } .business-dot { background: #3977c7; } .first-dot { background: #c18a25; } .general-dot { background: #64748b; }
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 38px; }
 .stat-card { padding: 20px 22px; background: #fff; border: 1px solid #e7edf3; border-radius: 15px; box-shadow: 0 4px 16px #102c4610; }
 .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
@@ -321,6 +365,23 @@ function statusClass(status) {
 .quick-text strong { font-size: .85rem; }
 .quick-text small { color: #8391a0; font-size: .7rem; line-height: 1.35; }
 .quick-arrow { margin-left: auto; color: #9aabba; font-size: 1rem; }
+.feedback-panel {
+  display: grid; grid-template-columns: minmax(220px, .9fr) minmax(0, 1.1fr); gap: 28px;
+  align-items: start; padding: 26px; margin: 0 0 24px; background: #fff;
+  border: 1px solid #e7edf3; border-radius: 17px; box-shadow: 0 4px 18px #102c460c;
+}
+.feedback-copy h2 { margin: 0; color: #102b46; font-size: 1.25rem; letter-spacing: -.03em; }
+.feedback-copy p { margin: 8px 0 0; color: #7a8998; font-size: .82rem; line-height: 1.55; }
+.feedback-form { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.feedback-form label { color: #617487; font-size: .72rem; font-weight: 800; }
+.feedback-form select, .feedback-form textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid #dce5ec; border-radius: 9px;
+  background: #fbfdff; color: #17344f; font: inherit; font-size: .82rem; resize: vertical;
+}
+.feedback-form select:focus, .feedback-form textarea:focus { outline: none; border-color: #3283b4; box-shadow: 0 0 0 3px #3283b41c; }
+.feedback-form button { justify-self: start; padding: 10px 15px; border: 0; border-radius: 9px; background: #1766a0; color: #fff; font: inherit; font-size: .8rem; font-weight: 800; cursor: pointer; }
+.feedback-form button:disabled { opacity: .45; cursor: not-allowed; }
+.feedback-confirmation { margin-top: 12px; padding: 9px 11px; border-radius: 8px; background: #eaf7f1; color: #137452; font-size: .75rem; font-weight: 700; }
 .booking-section { padding: 26px; background: #fff; border: 1px solid #e7edf3; border-radius: 17px; box-shadow: 0 4px 18px #102c460c; }
 .booking-heading { align-items: center; margin-bottom: 21px; }
 .view-all { color: #1766a0; font-size: .82rem; font-weight: 800; white-space: nowrap; }
@@ -355,7 +416,7 @@ function statusClass(status) {
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 900px) {
   .stats-grid, .quick-grid { grid-template-columns: repeat(2, 1fr); }
-  .dashboard-search, .spend-overview { grid-template-columns: 1fr; }
+  .dashboard-search, .spend-overview, .feedback-panel { grid-template-columns: 1fr; }
   .dashboard-search-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .welcome-panel { padding: 34px; }
 }
@@ -365,6 +426,7 @@ function statusClass(status) {
   .dashboard-search-form { grid-template-columns: 1fr; }
   .dashboard-search-form button { width: 100%; }
   .class-breakdown { grid-template-columns: 1fr; }
+  .feedback-panel { padding: 20px 16px; }
   .welcome-panel h1 { font-size: 1.8rem; }
   .stats-grid { gap: 10px; }
   .stat-card { padding: 15px; }
