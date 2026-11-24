@@ -3,13 +3,12 @@
     <section class="auth-visual">
       <div class="auth-visual-sky"></div>
       <div class="auth-visual-grid"></div>
-      <div class="auth-visual-brand"><span class="brand-wing">✈</span><span>SKYWINGS<small>THE ART OF TRAVEL</small></span></div>
+      <div class="auth-visual-brand"><span class="brand-wing">S</span><span>SKYWINGS<small>THE ART OF TRAVEL</small></span></div>
       <div class="auth-visual-copy"><span class="auth-kicker">WELCOME ABOARD</span><h1>Your journey<br />starts <em>here.</em></h1><p>Step into a more seamless way to travel. Your flights, reservations, and boarding passes — all in one place.</p></div>
-      <div class="auth-visual-plane" aria-hidden="true"><svg viewBox="0 0 520 190"><path d="M15 94 Q25 77 64 74 L422 74 Q472 78 505 96 Q472 114 422 118 L64 112 Q25 110 15 94Z" fill="#f5f8fb" stroke="#b9d2e3" stroke-width="2"/><path d="M170 78 L248 10 Q263 2 277 10 L252 80 L295 111 L251 112 L170 78Z" fill="#a9cce2"/><path d="M67 78 L101 43 Q111 37 120 43 L108 80 L128 111 L103 111 L67 110Z" fill="#c6dfed"/><path d="M31 94 L453 94" stroke="#137cb1" stroke-width="7"/><path d="M62 86 L390 86" stroke="#e6b56f" stroke-width="3"/><g fill="#173c59"><rect x="180" y="87" width="12" height="5" rx="2"/><rect x="202" y="87" width="12" height="5" rx="2"/><rect x="224" y="87" width="12" height="5" rx="2"/><rect x="246" y="87" width="12" height="5" rx="2"/><rect x="268" y="87" width="12" height="5" rx="2"/><rect x="290" y="87" width="12" height="5" rx="2"/></g></svg></div>
       <div class="auth-visual-footer"><span>01</span><i></i><span>THE WORLD, WITHIN REACH</span></div>
     </section>
     <section class="auth-form-side">
-      <div class="auth-mobile-brand"><span>✈</span> SKYWINGS</div>
+      <div class="auth-mobile-brand"><span>S</span> SKYWINGS</div>
       <div class="auth-form-wrap">
         <router-link to="/" class="back-home">← <span>Back to home</span></router-link>
         <div class="auth-heading"><span class="auth-kicker">YOUR SKYWINGS ACCOUNT</span><h2>Welcome <em>back.</em></h2><p>Sign in to continue your journey.</p></div>
@@ -25,7 +24,7 @@
       </div>
       <div class="auth-side-bottom"><span>SKYWINGS AIRLINES</span><span>TRAVEL BEAUTIFULLY.</span></div>
     </section>
-    <div v-if="loading" class="signin-flight-overlay" aria-live="polite"><div class="signin-flight-orbit"></div><div class="signin-flight-plane">✈</div><span>PREPARING FOR TAKEOFF</span><strong>Welcome aboard.</strong><i></i></div>
+    <div v-if="loading" class="signin-flight-overlay" aria-live="polite"><div class="signin-loader"></div><span>PREPARING FOR TAKEOFF</span><strong>Welcome aboard.</strong><i></i></div>
   </main>
 </template>
 
@@ -69,8 +68,6 @@ async function handleLogin() {
 .auth-visual-copy h1{font-size:clamp(55px,6vw,83px);line-height:.99;letter-spacing:-.065em;color:#fff;font-weight:600;margin:22px 0}
 .auth-visual-copy h1 em,.auth-heading h2 em{font-family:Georgia,serif;font-weight:400;color:#e6bd84}
 .auth-visual-copy p{max-width:380px;color:#b8cbd9;font-size:14px;line-height:1.9}
-.auth-visual-plane{position:absolute;width:min(68%,590px);right:-5%;bottom:18%;animation:auth-plane-float 8s ease-in-out infinite;filter:drop-shadow(0 22px 28px rgba(0,0,0,.25))}
-.auth-visual-plane svg{width:100%;height:auto}
 .auth-visual-footer{position:absolute;bottom:42px;left:clamp(30px,6vw,90px);right:clamp(30px,6vw,90px);display:flex;align-items:center;gap:14px;font-size:8px;letter-spacing:.23em;color:#9cb6c8;font-weight:800}
 .auth-visual-footer i{height:1px;width:45px;background:#c49b68}
 .auth-form-side{position:relative;display:flex;align-items:center;justify-content:center;padding:70px 36px;background:linear-gradient(145deg,#fff,#f4f7fa)}
@@ -95,17 +92,14 @@ async function handleLogin() {
 .auth-side-bottom{position:absolute;bottom:24px;left:36px;right:36px;display:flex;justify-content:space-between;color:#a5b1ba;font-size:8px;letter-spacing:.17em;font-weight:800}
 .auth-mobile-brand{display:none}
 .signin-flight-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(ellipse at 50% 42%,#174d70,#08233e 58%,#03101f);color:#fff;animation:overlay-in .25s ease both}
-.signin-flight-orbit{position:absolute;width:min(70vw,560px);aspect-ratio:1;border:1px solid rgba(189,225,244,.17);border-radius:50%;box-shadow:0 0 0 45px rgba(189,225,244,.025),0 0 0 90px rgba(189,225,244,.02);animation:orbit-breathe 2.8s ease-in-out infinite alternate}
-.signin-flight-plane{font-size:clamp(80px,15vw,150px);color:#f4f8fb;filter:drop-shadow(0 12px 22px rgba(0,0,0,.35));animation:takeoff 2.4s ease-in-out infinite}
-.signin-flight-overlay>span{margin-top:36px;color:#d5b17e;font-size:9px;font-weight:800;letter-spacing:.32em}
+.signin-loader{width:38px;height:38px;border:2px solid rgba(255,255,255,.22);border-top-color:#e5bd84;border-radius:50%;animation:signin-spin .8s linear infinite}
+@keyframes signin-spin{to{transform:rotate(360deg)}}
+.signin-flight-overlay>span{margin-top:28px;color:#d5b17e;font-size:9px;font-weight:800;letter-spacing:.32em}
 .signin-flight-overlay>strong{margin-top:10px;font:400 clamp(30px,5vw,48px) Georgia,serif}
 .signin-flight-overlay>i{position:absolute;bottom:12%;width:160px;height:2px;background:linear-gradient(90deg,transparent,#e5bd84,transparent);animation:runway-glow 1.7s ease-in-out infinite}
-@keyframes auth-plane-float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-16px) rotate(0deg)}}
-@keyframes takeoff{0%{transform:translate(-30vw,35px) rotate(8deg);opacity:0}18%{opacity:1}75%{transform:translate(10vw,-18px) rotate(-5deg);opacity:1}100%{transform:translate(48vw,-100px) rotate(-10deg);opacity:0}}
-@keyframes orbit-breathe{from{transform:scale(.96);opacity:.55}to{transform:scale(1.04);opacity:1}}
 @keyframes runway-glow{0%,100%{opacity:.35;transform:scaleX(.7)}50%{opacity:1;transform:scaleX(1.2)}}
 @keyframes overlay-in{from{opacity:0}to{opacity:1}}
-@media(max-width:900px){.auth-experience{grid-template-columns:1fr}.auth-visual{display:none}.auth-form-side{min-height:calc(100vh - 72px);padding:55px 25px}.auth-mobile-brand{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:42px;font-size:12px;font-weight:800;letter-spacing:.2em;color:#17334c}.auth-mobile-brand span{color:#b58b57;font-size:20px}.back-home{margin-bottom:42px}.auth-side-bottom{bottom:15px}}
+@media(max-width:900px){.auth-experience{grid-template-columns:1fr}.auth-visual{display:none}.auth-form-side{min-height:calc(100vh - 72px);padding:55px 25px}.auth-mobile-brand{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:42px;font-size:12px;font-weight:800;letter-spacing:.2em;color:#17334c}.auth-mobile-brand span{width:30px;height:30px;display:grid;place-items:center;border:1px solid #b58b57;border-radius:50%;color:#b58b57;font-size:14px}.back-home{margin-bottom:42px}.auth-side-bottom{bottom:15px}}
 @media(max-width:480px){.auth-form-side{padding:35px 22px 60px}.auth-heading h2{font-size:42px}.auth-security{margin-top:36px}}
-@media(prefers-reduced-motion:reduce){.auth-experience *, .signin-flight-overlay *{animation:none!important;transition:none!important}.signin-flight-plane{transform:none}}
+@media(prefers-reduced-motion:reduce){.auth-experience *, .signin-flight-overlay *{animation:none!important;transition:none!important}}
 </style>
